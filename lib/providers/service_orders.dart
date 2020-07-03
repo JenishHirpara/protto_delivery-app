@@ -18,6 +18,7 @@ class ServiceOrderItem with ChangeNotifier {
   final String bikeNumber;
   final String flat;
   final String address;
+  final String landmark;
   final String deliveryType;
   final String customer;
   final String deId;
@@ -33,6 +34,7 @@ class ServiceOrderItem with ChangeNotifier {
     @required this.bikeid,
     @required this.flat,
     @required this.address,
+    @required this.landmark,
     @required this.deliveryType,
     @required this.customer,
     @required this.make,
@@ -102,6 +104,7 @@ class ServiceOrders with ChangeNotifier {
             status: extractedData1['data'][i]['status'],
             address: extractedData1['data'][i]['address'],
             flat: extractedData1['data'][i]['flat'],
+            landmark: extractedData1['data'][i]['landmark'],
             date: extractedData1['data'][i]['date'],
             time: extractedData1['data'][i]['timestamp'],
             bikeid: extractedData1['data'][i]['bike_id'],
@@ -142,6 +145,7 @@ class ServiceOrders with ChangeNotifier {
       bikeid: item.bikeid,
       flat: item.flat,
       address: item.address,
+      landmark: item.landmark,
       deliveryType: item.deliveryType,
       customer: item.customer,
       make: item.make,

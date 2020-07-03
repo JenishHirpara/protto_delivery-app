@@ -3,17 +3,20 @@ import 'package:google_fonts/google_fonts.dart';
 
 import './delivery_info_screen.dart';
 import './inspection_images_screen.dart';
+import '../../providers/delivery_orders.dart';
 
 class MenuScreen extends StatelessWidget {
   static const routeName = '/delivery-ex-menu';
 
   @override
   Widget build(BuildContext context) {
+    final order =
+        ModalRoute.of(context).settings.arguments as DeliveryOrderItem;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          'Customer Name',
+          order.customer,
           style: GoogleFonts.montserrat(
             color: Colors.deepOrange,
             fontSize: 24,
@@ -55,8 +58,9 @@ class MenuScreen extends StatelessWidget {
                         color: Color.fromRGBO(100, 100, 100, 1),
                       ),
                       onTap: () {
-                        Navigator.of(context)
-                            .pushNamed(DeliveryInfoScreen.routeName);
+                        Navigator.of(context).pushNamed(
+                            DeliveryInfoScreen.routeName,
+                            arguments: order);
                       },
                     ),
                     SizedBox(height: 10),
@@ -75,8 +79,9 @@ class MenuScreen extends StatelessWidget {
                         color: Color.fromRGBO(100, 100, 100, 1),
                       ),
                       onTap: () {
-                        Navigator.of(context)
-                            .pushNamed(InspectionImagesScreen.routeName);
+                        Navigator.of(context).pushNamed(
+                            InspectionImagesScreen.routeName,
+                            arguments: order);
                       },
                     ),
                     SizedBox(height: 10),

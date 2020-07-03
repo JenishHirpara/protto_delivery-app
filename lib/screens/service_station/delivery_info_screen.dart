@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:protto_delivery_ex_app/providers/service_station.dart';
 import 'package:provider/provider.dart';
+import 'package:location/location.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../providers/service_orders.dart';
 
@@ -18,6 +20,7 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
   final _form = GlobalKey<FormState>();
   var _userName;
   var _id;
+  List<DeliveryExecutiveUser> deliveryEx;
   @override
   void didChangeDependencies() async {
     if (_isInit) {
@@ -26,6 +29,18 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
       setState(() {
         _isLoading = false;
       });
+      var actualdeliveryEx =
+          Provider.of<ServiceStation>(context, listen: false).item2;
+      deliveryEx = [actualdeliveryEx[0]];
+      if (actualdeliveryEx.length != 0) {
+        for (int i = 1; i < actualdeliveryEx.length; i++) {
+          var duplicate = deliveryEx.indexWhere(
+              (user) => user.userName == actualdeliveryEx[i].userName);
+          if (duplicate == -1) {
+            deliveryEx.add(actualdeliveryEx[i]);
+          }
+        }
+      }
     }
     _isInit = false;
     super.didChangeDependencies();
@@ -49,14 +64,45 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
     } catch (error) {}
   }
 
+  Location _location = new Location();
+  var _locationData;
+  bool _serviceEnabled;
+  PermissionStatus _permissionGranted;
+
+  _launchURL(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  void _openMap(ServiceOrderItem order) async {
+    _serviceEnabled = await _location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await _location.requestService();
+    }
+    if (!_serviceEnabled) {
+      return;
+    }
+    _permissionGranted = await _location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await _location.requestPermission();
+    }
+    if (_permissionGranted != PermissionStatus.granted) {
+      return;
+    }
+    _locationData = await _location.getLocation();
+    String query = Uri.encodeComponent(order.address);
+    var url =
+        'https://www.google.com/maps/dir/?api=1&origin=${_locationData.latitude},${_locationData.longitude}&destination=$query&travelmode=driving&dir_action=navigate';
+    _launchURL(url);
+  }
+
   @override
   Widget build(BuildContext context) {
     final order = ModalRoute.of(context).settings.arguments as ServiceOrderItem;
-    final availableDeliveryEx =
-        Provider.of<ServiceStation>(context, listen: false)
-            .item2
-            .where((ex) => !ex.assigned)
-            .toList();
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -140,7 +186,9 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
                                         ),
                                       ),
                                       TextSpan(
-                                        text: '${order.flat}, ${order.address}',
+                                        text: order.landmark != ''
+                                            ? '${order.flat}, ${order.landmark}, ${order.address}'
+                                            : '${order.flat}, ${order.address}',
                                         style: GoogleFonts.cantataOne(
                                           color: Colors.grey,
                                         ),
@@ -151,12 +199,12 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
                               ),
                               Expanded(
                                 flex: 1,
-                                child: GestureDetector(
-                                  child: Icon(
+                                child: IconButton(
+                                  icon: Icon(
                                     Icons.location_on,
                                     color: Colors.grey,
                                   ),
-                                  onTap: () {},
+                                  onPressed: () => _openMap(order),
                                 ),
                               ),
                             ],
@@ -256,7 +304,9 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
                                         ),
                                       ),
                                       TextSpan(
-                                        text: '${order.flat}, ${order.address}',
+                                        text: order.landmark != ''
+                                            ? '${order.flat}, ${order.landmark}, ${order.address}'
+                                            : '${order.flat}, ${order.address}',
                                         style: GoogleFonts.cantataOne(
                                           color: Colors.grey,
                                         ),
@@ -267,17 +317,17 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
                               ),
                               Expanded(
                                 flex: 1,
-                                child: GestureDetector(
-                                  child: Icon(
+                                child: IconButton(
+                                  icon: Icon(
                                     Icons.location_on,
                                     color: Colors.grey,
                                   ),
-                                  onTap: () {},
+                                  onPressed: () => _openMap(order),
                                 ),
                               ),
                             ],
                           ),
-                          SizedBox(height: 4),
+                          SizedBox(height: 20),
                           Row(
                             children: <Widget>[
                               Text(
@@ -299,7 +349,6 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
                         ],
                       ),
                     ),
-                    SizedBox(height: 20),
                     Container(
                       width: double.infinity,
                       padding:
@@ -316,14 +365,14 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
                           Form(
                             key: _form,
                             child: DropdownButtonFormField(
-                              items: availableDeliveryEx
-                                  .map<DropdownMenuItem>((ex) {
+                              items: deliveryEx.map<DropdownMenuItem>((ex) {
                                 return DropdownMenuItem<String>(
-                                    child: Text(
-                                      ex.userName,
-                                      textAlign: TextAlign.left,
-                                    ),
-                                    value: ex.userName);
+                                  child: Text(
+                                    ex.userName,
+                                    textAlign: TextAlign.left,
+                                  ),
+                                  value: ex.userName,
+                                );
                               }).toList(),
                               onChanged: (value) {
                                 _userName = value;

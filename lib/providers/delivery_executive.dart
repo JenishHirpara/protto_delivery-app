@@ -16,6 +16,7 @@ class DeliveryExecutiveUser with ChangeNotifier {
   final String password;
   final String ssCode;
   final String ssId;
+  final String ssName;
   final String assignedBooking;
   final String status;
 
@@ -28,6 +29,7 @@ class DeliveryExecutiveUser with ChangeNotifier {
     @required this.password,
     @required this.ssCode,
     @required this.ssId,
+    @required this.ssName,
     this.assignedBooking,
     this.status,
   });
@@ -68,6 +70,7 @@ class DeliveryExecutive with ChangeNotifier {
       aadhar: extractedData['data']['de_id_proof'],
       username: extractedData['data']['de_name'],
       ssId: extractedData['data']['ss_id'],
+      ssName: extractedData['data']['ss_name'],
       password: extractedData['data']['de_passcode'],
     );
     var rng = new Random();
@@ -94,7 +97,6 @@ class DeliveryExecutive with ChangeNotifier {
         'http://stage.protto.in/api/hitesh/deliveryex.php?de_name=${extractedUserData['name']}&de_passcode=${extractedUserData['password']}';
     final response = await http.get(url);
     final extractedData = json.decode(response.body) as Map<String, dynamic>;
-    print(extractedData['data']['de_id']);
     _item = DeliveryExecutiveUser(
       id: extractedData['data']['de_id'],
       ssCode: extractedData['data']['ss_code'],
@@ -103,6 +105,7 @@ class DeliveryExecutive with ChangeNotifier {
       aadhar: extractedData['data']['de_id_proof'],
       username: extractedData['data']['de_name'],
       ssId: extractedData['data']['ss_id'],
+      ssName: extractedData['data']['ss_name'],
       password: extractedData['data']['de_passcode'],
     );
     _token = extractedUserData['token'];

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-import '../screens/service_station/order_menu_screen.dart';
+import '../screens/delivery_executive/menu_screen.dart';
 import '../providers/delivery_orders.dart';
 
 class DeliveryActiveOrderDetail extends StatelessWidget {
@@ -31,7 +31,7 @@ class DeliveryActiveOrderDetail extends StatelessWidget {
     final order = Provider.of<DeliveryOrderItem>(context, listen: false);
     return Container(
       width: double.infinity,
-      height: 220,
+      height: order.landmark != '' ? 250 : 230,
       decoration: BoxDecoration(
         border: Border.all(
           color: Colors.deepOrange,
@@ -167,7 +167,8 @@ class DeliveryActiveOrderDetail extends StatelessWidget {
                 IconButton(
                   icon: Icon(Icons.arrow_forward),
                   onPressed: () {
-                    Navigator.of(context).pushNamed(OrderMenuScreen.routeName);
+                    Navigator.of(context)
+                        .pushNamed(MenuScreen.routeName, arguments: order);
                   },
                 ),
                 Column(

@@ -1,12 +1,227 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
+import 'package:location/location.dart';
+import 'package:protto_delivery_ex_app/providers/delivery_executive.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:provider/provider.dart';
 
-class DeliveryInfoScreen extends StatelessWidget {
+import '../../providers/delivery_orders.dart';
+import '../../models/http_exception.dart';
+
+class DeliveryInfoScreen extends StatefulWidget {
   static const routeName = '/delivery-ex-info';
 
   @override
+  _DeliveryInfoScreenState createState() => _DeliveryInfoScreenState();
+}
+
+class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
+  Location _location = new Location();
+  var _locationData;
+  bool _serviceEnabled;
+  PermissionStatus _permissionGranted;
+
+  _launchURL(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  void _openMap(DeliveryOrderItem order) async {
+    _serviceEnabled = await _location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await _location.requestService();
+    }
+    if (!_serviceEnabled) {
+      return;
+    }
+    _permissionGranted = await _location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await _location.requestPermission();
+    }
+    if (_permissionGranted != PermissionStatus.granted) {
+      return;
+    }
+    _locationData = await _location.getLocation();
+    String query = Uri.encodeComponent(order.address);
+    var url =
+        'https://www.google.com/maps/dir/?api=1&origin=${_locationData.latitude},${_locationData.longitude}&destination=$query&travelmode=driving&dir_action=navigate';
+    _launchURL(url);
+  }
+
+  void _pickBikeFromCustomer(String bookingId) async {
+    try {
+      await Provider.of<DeliveryOrders>(context, listen: false)
+          .approveotp(bookingId);
+      await Provider.of<DeliveryOrders>(context, listen: false)
+          .incrementstatus(bookingId, '2');
+      showDialog(
+        context: context,
+        builder: (ctx) {
+          return AlertDialog(
+            title: Text('Pick up bike from customer approved!'),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('Okay'),
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } on HttpException catch (error) {
+      showDialog(
+        context: context,
+        builder: (ctx) {
+          return AlertDialog(
+            title: Text('Error occurred!'),
+            content: Text(error.message),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('Okay'),
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  void _dropBikeToSS(String bookingId) async {
+    try {
+      await Provider.of<DeliveryOrders>(context, listen: false)
+          .incrementstatus(bookingId, '3');
+      showDialog(
+        context: context,
+        builder: (ctx) {
+          return AlertDialog(
+            title: Text('Bike drop to Service Station approved!'),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('Okay'),
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } on HttpException catch (error) {
+      showDialog(
+        context: context,
+        builder: (ctx) {
+          return AlertDialog(
+            title: Text('Error occurred!'),
+            content: Text(error.message),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('Okay'),
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  void _bikePickedFromSS(String bookingId) async {
+    try {
+      await Provider.of<DeliveryOrders>(context, listen: false)
+          .incrementstatus(bookingId, '7');
+      showDialog(
+        context: context,
+        builder: (ctx) {
+          return AlertDialog(
+            title: Text('Pick up bike from service station approved!'),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('Okay'),
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } on HttpException catch (error) {
+      showDialog(
+        context: context,
+        builder: (ctx) {
+          return AlertDialog(
+            title: Text('Error occurred!'),
+            content: Text(error.message),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('Okay'),
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  void _bikeDroppedToCustomer(String bookingId) async {
+    try {
+      await Provider.of<DeliveryOrders>(context, listen: false)
+          .incrementstatus(bookingId, '8');
+      showDialog(
+        context: context,
+        builder: (ctx) {
+          return AlertDialog(
+            title: Text('Bike drop to customer approved!'),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('Okay'),
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } on HttpException catch (error) {
+      showDialog(
+        context: context,
+        builder: (ctx) {
+          return AlertDialog(
+            title: Text('Error occurred!'),
+            content: Text(error.message),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('Okay'),
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final order =
+        ModalRoute.of(context).settings.arguments as DeliveryOrderItem;
+    var otp = order.otp;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -38,14 +253,14 @@ class DeliveryInfoScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
                   Text(
-                    'Customer Name',
+                    order.customer,
                     style: GoogleFonts.montserrat(
                       color: Colors.deepOrange,
                       fontSize: 18,
                     ),
                   ),
                   Text(
-                    'Yamaha FZ',
+                    '${order.make} ${order.model}',
                     style: GoogleFonts.montserrat(
                       fontSize: 18,
                     ),
@@ -86,8 +301,9 @@ class DeliveryInfoScreen extends StatelessWidget {
                                   ),
                                 ),
                                 TextSpan(
-                                  text:
-                                      '701, Landmark, MG Road, Vile Parle (E)',
+                                  text: order.landmark != ''
+                                      ? '${order.flat}, ${order.landmark}, ${order.address}'
+                                      : '${order.flat}, ${order.address}',
                                   style: GoogleFonts.cantataOne(
                                     color: Colors.grey,
                                   ),
@@ -98,12 +314,12 @@ class DeliveryInfoScreen extends StatelessWidget {
                         ),
                         Expanded(
                           flex: 1,
-                          child: GestureDetector(
-                            child: Icon(
+                          child: IconButton(
+                            icon: Icon(
                               Icons.location_on,
                               color: Colors.grey,
                             ),
-                            onTap: () {},
+                            onPressed: () => _openMap(order),
                           ),
                         ),
                       ],
@@ -120,7 +336,7 @@ class DeliveryInfoScreen extends StatelessWidget {
                         ),
                         SizedBox(width: 8),
                         Text(
-                          DateFormat('dd/MM/yy').format(DateTime.now()),
+                          order.date,
                           style: GoogleFonts.cantataOne(
                             color: Colors.grey,
                           ),
@@ -139,32 +355,32 @@ class DeliveryInfoScreen extends StatelessWidget {
                         ),
                         SizedBox(width: 8),
                         Text(
-                          '9am - 11am',
+                          order.time,
                           style: GoogleFonts.cantataOne(
                             color: Colors.grey,
                           ),
                         ),
                       ],
                     ),
-                    SizedBox(height: 4),
-                    Row(
-                      children: <Widget>[
-                        Text(
-                          'Del. Ex:',
-                          style: GoogleFonts.cantataOne(
-                            color: Color.fromRGBO(128, 128, 128, 1),
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-                          'Delivery Ex. Name',
-                          style: GoogleFonts.cantataOne(
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ],
-                    ),
+                    // SizedBox(height: 4),
+                    // Row(
+                    //   children: <Widget>[
+                    //     Text(
+                    //       'Del. Ex:',
+                    //       style: GoogleFonts.cantataOne(
+                    //         color: Color.fromRGBO(128, 128, 128, 1),
+                    //         fontWeight: FontWeight.bold,
+                    //       ),
+                    //     ),
+                    //     SizedBox(width: 8),
+                    //     Text(
+                    //       'Delivery Ex. Name',
+                    //       style: GoogleFonts.cantataOne(
+                    //         color: Colors.grey,
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
                     SizedBox(height: 4),
                     Row(
                       children: <Widget>[
@@ -177,7 +393,9 @@ class DeliveryInfoScreen extends StatelessWidget {
                         ),
                         SizedBox(width: 8),
                         Text(
-                          '?????',
+                          Provider.of<DeliveryExecutive>(context, listen: false)
+                              .item
+                              .ssName,
                           style: GoogleFonts.cantataOne(
                             color: Colors.grey,
                           ),
@@ -205,7 +423,7 @@ class DeliveryInfoScreen extends StatelessWidget {
                       color: Color.fromRGBO(200, 200, 200, 1),
                       child: Center(
                         child: Text(
-                          '1',
+                          otp[0],
                           style: TextStyle(fontSize: 20),
                         ),
                       ),
@@ -216,7 +434,7 @@ class DeliveryInfoScreen extends StatelessWidget {
                       color: Color.fromRGBO(200, 200, 200, 1),
                       child: Center(
                         child: Text(
-                          '2',
+                          otp[1],
                           style: TextStyle(fontSize: 20),
                         ),
                       ),
@@ -227,7 +445,7 @@ class DeliveryInfoScreen extends StatelessWidget {
                       color: Color.fromRGBO(200, 200, 200, 1),
                       child: Center(
                         child: Text(
-                          '1',
+                          otp[2],
                           style: TextStyle(fontSize: 20),
                         ),
                       ),
@@ -238,7 +456,7 @@ class DeliveryInfoScreen extends StatelessWidget {
                       color: Color.fromRGBO(200, 200, 200, 1),
                       child: Center(
                         child: Text(
-                          '2',
+                          otp[3],
                           style: TextStyle(fontSize: 20),
                         ),
                       ),
@@ -262,7 +480,7 @@ class DeliveryInfoScreen extends StatelessWidget {
                         child: Text('Picked'),
                         color: Colors.white,
                         elevation: 0,
-                        onPressed: () {},
+                        onPressed: () => _pickBikeFromCustomer(order.bookingId),
                       ),
                     ),
                     Container(
@@ -275,7 +493,7 @@ class DeliveryInfoScreen extends StatelessWidget {
                         child: Text('Dropped'),
                         color: Colors.white,
                         elevation: 0,
-                        onPressed: () {},
+                        onPressed: () => _dropBikeToSS(order.bookingId),
                       ),
                     ),
                   ],
@@ -312,8 +530,9 @@ class DeliveryInfoScreen extends StatelessWidget {
                                   ),
                                 ),
                                 TextSpan(
-                                  text:
-                                      '701, Landmark, MG Road, Vile Parle (E)',
+                                  text: order.landmark != ''
+                                      ? '${order.flat}, ${order.landmark}, ${order.address}'
+                                      : '${order.flat}, ${order.address}',
                                   style: GoogleFonts.cantataOne(
                                     color: Colors.grey,
                                   ),
@@ -324,73 +543,73 @@ class DeliveryInfoScreen extends StatelessWidget {
                         ),
                         Expanded(
                           flex: 1,
-                          child: GestureDetector(
-                            child: Icon(
+                          child: IconButton(
+                            icon: Icon(
                               Icons.location_on,
                               color: Colors.grey,
                             ),
-                            onTap: () {},
+                            onPressed: () => _openMap(order),
                           ),
                         ),
                       ],
                     ),
-                    SizedBox(height: 4),
-                    Row(
-                      children: <Widget>[
-                        Text(
-                          'Date:',
-                          style: GoogleFonts.cantataOne(
-                            color: Color.fromRGBO(128, 128, 128, 1),
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-                          DateFormat('dd/MM/yy').format(DateTime.now()),
-                          style: GoogleFonts.cantataOne(
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 4),
-                    Row(
-                      children: <Widget>[
-                        Text(
-                          'Time:',
-                          style: GoogleFonts.cantataOne(
-                            color: Color.fromRGBO(128, 128, 128, 1),
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-                          '9am - 11am',
-                          style: GoogleFonts.cantataOne(
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 4),
-                    Row(
-                      children: <Widget>[
-                        Text(
-                          'Del. Ex:',
-                          style: GoogleFonts.cantataOne(
-                            color: Color.fromRGBO(128, 128, 128, 1),
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-                          'Delivery Ex. Name',
-                          style: GoogleFonts.cantataOne(
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ],
-                    ),
+                    // SizedBox(height: 4),
+                    // Row(
+                    //   children: <Widget>[
+                    //     Text(
+                    //       'Date:',
+                    //       style: GoogleFonts.cantataOne(
+                    //         color: Color.fromRGBO(128, 128, 128, 1),
+                    //         fontWeight: FontWeight.bold,
+                    //       ),
+                    //     ),
+                    //     SizedBox(width: 8),
+                    //     Text(
+                    //       order.date,
+                    //       style: GoogleFonts.cantataOne(
+                    //         color: Colors.grey,
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
+                    // SizedBox(height: 4),
+                    // Row(
+                    //   children: <Widget>[
+                    //     Text(
+                    //       'Time:',
+                    //       style: GoogleFonts.cantataOne(
+                    //         color: Color.fromRGBO(128, 128, 128, 1),
+                    //         fontWeight: FontWeight.bold,
+                    //       ),
+                    //     ),
+                    //     SizedBox(width: 8),
+                    //     Text(
+                    //       order.time,
+                    //       style: GoogleFonts.cantataOne(
+                    //         color: Colors.grey,
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
+                    // SizedBox(height: 4),
+                    // Row(
+                    //   children: <Widget>[
+                    //     Text(
+                    //       'Del. Ex:',
+                    //       style: GoogleFonts.cantataOne(
+                    //         color: Color.fromRGBO(128, 128, 128, 1),
+                    //         fontWeight: FontWeight.bold,
+                    //       ),
+                    //     ),
+                    //     SizedBox(width: 8),
+                    //     Text(
+                    //       'Delivery Ex. Name',
+                    //       style: GoogleFonts.cantataOne(
+                    //         color: Colors.grey,
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
                   ],
                 ),
               ),
@@ -410,7 +629,7 @@ class DeliveryInfoScreen extends StatelessWidget {
                         child: Text('Picked'),
                         color: Colors.white,
                         elevation: 0,
-                        onPressed: () {},
+                        onPressed: () => _bikePickedFromSS(order.bookingId),
                       ),
                     ),
                     Container(
@@ -423,7 +642,8 @@ class DeliveryInfoScreen extends StatelessWidget {
                         child: Text('Dropped'),
                         color: Colors.white,
                         elevation: 0,
-                        onPressed: () {},
+                        onPressed: () =>
+                            _bikeDroppedToCustomer(order.bookingId),
                       ),
                     ),
                   ],

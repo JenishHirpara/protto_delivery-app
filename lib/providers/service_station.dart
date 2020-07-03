@@ -131,7 +131,6 @@ class ServiceStation with ChangeNotifier {
       List<DeliveryExecutiveUser> data = [];
       for (int i = 0; i < int.parse(extractedData['count']); i++) {
         if (extractedData['data'][i]['message'] == 'assigned') {
-          print(extractedData['data'][i]['make']);
           data.insert(
             i,
             DeliveryExecutiveUser(

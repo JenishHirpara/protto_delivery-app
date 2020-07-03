@@ -33,7 +33,7 @@ class ServiceActiveOrderDetail extends StatelessWidget {
     final order = Provider.of<ServiceOrderItem>(context, listen: false);
     return Container(
       width: double.infinity,
-      height: 220,
+      height: order.landmark != '' ? 250 : 235,
       decoration: BoxDecoration(
         border: Border.all(
           color: Colors.deepOrange,
