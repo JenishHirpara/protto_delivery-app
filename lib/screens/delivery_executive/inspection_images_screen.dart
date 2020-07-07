@@ -1,6 +1,10 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../providers/delivery_orders.dart';
 import '../../models/http_exception.dart';
@@ -13,29 +17,49 @@ class InspectionImagesScreen extends StatefulWidget {
 }
 
 class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
-  var _isLoading = false;
-
-  Widget _imageBuilder(BuildContext context) {
-    return GestureDetector(
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.25,
-        height: MediaQuery.of(context).size.width * 0.25,
-        color: Colors.grey,
-      ),
-      onTap: () {},
-    );
-  }
+  var _isLoading = true;
+  List<File> preImgs = [];
+  List<File> postImgs = [];
+  List<String> preImgUrl = [];
+  List<String> postImgUrl = [];
+  List<String> preImgPathName = [];
+  List<String> postImgPathName = [];
+  var _isInit = true;
+  var isPreFuelSet = false;
+  var isPostFuelSet = false;
+  var isPreOdometerSet = false;
+  var isPostOdometerSet = false;
+  var prerating = 0.0;
+  var postrating = 0.0;
+  var preOdometer = TextEditingController();
+  var postOdometer = TextEditingController();
+  var getPreOdometer;
+  var getPostOdometer;
+  var getPreFuel;
+  var getPostFuel;
 
   void _savePage(BuildContext context, String bookingId) async {
     try {
       setState(() {
         _isLoading = true;
       });
-      await Provider.of<DeliveryOrders>(context, listen: false)
-          .incrementstatus(bookingId, '1');
-      Navigator.of(context).pop();
+      if (Provider.of<DeliveryOrders>(context, listen: false)
+          .preImages
+          .isEmpty) {
+        await Provider.of<DeliveryOrders>(context, listen: false)
+            .incrementstatus(bookingId, '1');
+        await Provider.of<DeliveryOrders>(context, listen: false).addpreimages(
+            bookingId, preImgUrl, preOdometer.text, prerating, preImgPathName);
+        Navigator.of(context).pop();
+      } else {
+        await Provider.of<DeliveryOrders>(context, listen: false)
+            .incrementstatus(bookingId, '6');
+        await Provider.of<DeliveryOrders>(context, listen: false).addpostimages(
+            bookingId, postImgUrl, postOdometer.text, postrating);
+        Navigator.of(context).pop();
+      }
     } on HttpException catch (error) {
-      showDialog(
+      await showDialog(
         context: context,
         builder: (ctx) {
           return AlertDialog(
@@ -52,7 +76,55 @@ class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
           );
         },
       );
+      Navigator.of(context).pop();
     }
+  }
+
+  Future<void> _showPopup(String text) {
+    return showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title: Text(text),
+          actions: <Widget>[
+            FlatButton(
+              onPressed: () {
+                Navigator.of(ctx).pop();
+              },
+              child: Text('Okay'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  void didChangeDependencies() async {
+    if (_isInit) {
+      await Provider.of<DeliveryOrders>(context, listen: false).getpreimages(
+          (ModalRoute.of(context).settings.arguments as DeliveryOrderItem)
+              .bookingId);
+      await Provider.of<DeliveryOrders>(context, listen: false).getpostimages(
+          (ModalRoute.of(context).settings.arguments as DeliveryOrderItem)
+              .bookingId);
+      setState(() {
+        _isLoading = false;
+      });
+      preImgUrl = Provider.of<DeliveryOrders>(context, listen: false).preImages;
+      postImgUrl =
+          Provider.of<DeliveryOrders>(context, listen: false).postImages;
+      getPreOdometer = Provider.of<DeliveryOrders>(context, listen: false)
+          .preOdometerReading;
+      getPostOdometer = Provider.of<DeliveryOrders>(context, listen: false)
+          .postOdometerReading;
+      getPreFuel =
+          Provider.of<DeliveryOrders>(context, listen: false).preFuelLevel;
+      getPostFuel =
+          Provider.of<DeliveryOrders>(context, listen: false).postFuelLevel;
+    }
+    _isInit = false;
+    super.didChangeDependencies();
   }
 
   @override
@@ -143,34 +215,131 @@ class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
                                 color: Color.fromRGBO(112, 112, 112, 1),
                               ),
                             ),
-                            IconButton(
-                              icon: Icon(
-                                Icons.camera_alt,
-                                color: Color.fromRGBO(112, 112, 112, 1),
-                              ),
-                              onPressed: () {},
-                            ),
+                            Provider.of<DeliveryOrders>(context, listen: false)
+                                    .preImages
+                                    .isNotEmpty
+                                ? Container()
+                                : IconButton(
+                                    icon: Icon(
+                                      Icons.camera_alt,
+                                      color: Color.fromRGBO(112, 112, 112, 1),
+                                    ),
+                                    onPressed: () async {
+                                      if (preImgs.length == 6) {
+                                        showDialog(
+                                          context: context,
+                                          builder: (ctx) {
+                                            return AlertDialog(
+                                              title: Text(
+                                                  'No more than 6 images can be clicked!'),
+                                              actions: <Widget>[
+                                                FlatButton(
+                                                  onPressed: () {
+                                                    Navigator.of(ctx).pop();
+                                                  },
+                                                  child: Text('Okay'),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      } else {
+                                        var text = '';
+                                        switch (preImgs.length) {
+                                          case 0:
+                                            text = 'Front pic';
+                                            break;
+                                          case 1:
+                                            text = 'Left pic';
+                                            break;
+                                          case 2:
+                                            text = 'Rear pic';
+                                            break;
+                                          case 3:
+                                            text = 'Right pic';
+                                            break;
+                                          case 4:
+                                            text = 'Dashboard pic';
+                                            break;
+                                          case 5:
+                                            text = 'Number plate pic';
+                                            break;
+                                        }
+                                        await _showPopup(text);
+                                        var imgFile =
+                                            await ImagePicker.pickImage(
+                                          source: ImageSource.camera,
+                                          // maxHeight: 640,
+                                          // maxWidth: 640,
+                                          imageQuality: 30,
+                                        );
+                                        if (imgFile == null) {
+                                          return;
+                                        }
+                                        setState(() {
+                                          preImgs.add(imgFile);
+                                          preImgUrl.add(base64Encode(
+                                              imgFile.readAsBytesSync()));
+                                          preImgPathName.add(
+                                              imgFile.path.split('/').last);
+                                        });
+                                      }
+                                    },
+                                  ),
                           ],
                         ),
-                        GridView(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          children: <Widget>[
-                            _imageBuilder(context),
-                            _imageBuilder(context),
-                            _imageBuilder(context),
-                            _imageBuilder(context),
-                            _imageBuilder(context),
-                            _imageBuilder(context),
-                          ],
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3,
-                            childAspectRatio: 1,
-                            crossAxisSpacing: 5,
-                            mainAxisSpacing: 5,
-                          ),
-                        ),
+                        preImgUrl.isNotEmpty
+                            ? GridView(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 3,
+                                  childAspectRatio: 1,
+                                  crossAxisSpacing: 5,
+                                  mainAxisSpacing: 5,
+                                ),
+                                children: List.generate(
+                                  preImgUrl.length,
+                                  (index) {
+                                    return Container(
+                                      child: Image.memory(
+                                        Base64Decoder()
+                                            .convert(preImgUrl[index]),
+                                        fit: BoxFit.cover,
+                                        height: 300,
+                                        width: 300,
+                                      ),
+                                    );
+                                  },
+                                ),
+                              )
+                            : preImgs.isEmpty
+                                ? Container()
+                                : GridView(
+                                    shrinkWrap: true,
+                                    physics: NeverScrollableScrollPhysics(),
+                                    gridDelegate:
+                                        SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 3,
+                                      childAspectRatio: 1,
+                                      crossAxisSpacing: 5,
+                                      mainAxisSpacing: 5,
+                                    ),
+                                    children: List.generate(
+                                      preImgs.length,
+                                      (index) {
+                                        return Container(
+                                          child: Image.file(
+                                            preImgs[index],
+                                            fit: BoxFit.cover,
+                                            height: 300,
+                                            width: 300,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
                         SizedBox(height: 10),
                         Container(
                           width: double.infinity,
@@ -187,13 +356,32 @@ class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
                                 ),
                               ),
                               SizedBox(width: 15),
-                              FlatButton(
-                                onPressed: () {},
-                                child: Text(
-                                  'Add',
-                                  style: TextStyle(color: Colors.deepOrange),
-                                ),
-                              ),
+                              getPreOdometer == null
+                                  ? isPreOdometerSet
+                                      ? Expanded(
+                                          child: TextField(
+                                            controller: preOdometer,
+                                            keyboardType: TextInputType.number,
+                                          ),
+                                        )
+                                      : FlatButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              isPreOdometerSet = true;
+                                            });
+                                          },
+                                          child: Text(
+                                            'Add',
+                                            style: TextStyle(
+                                                color: Colors.deepOrange),
+                                          ),
+                                        )
+                                  : Text(
+                                      getPreOdometer,
+                                      style: GoogleFonts.cantataOne(
+                                        color: Color.fromRGBO(112, 112, 112, 1),
+                                      ),
+                                    ),
                             ],
                           ),
                         ),
@@ -213,13 +401,38 @@ class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
                                 ),
                               ),
                               SizedBox(width: 15),
-                              FlatButton(
-                                onPressed: () {},
-                                child: Text(
-                                  'Add',
-                                  style: TextStyle(color: Colors.deepOrange),
-                                ),
-                              ),
+                              getPreFuel == null
+                                  ? isPreFuelSet
+                                      ? Slider(
+                                          value: prerating,
+                                          onChanged: (newRating) {
+                                            setState(() {
+                                              prerating = newRating;
+                                            });
+                                          },
+                                          divisions: 10,
+                                          label: '$prerating',
+                                          min: 0,
+                                          max: 10,
+                                        )
+                                      : FlatButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              isPreFuelSet = true;
+                                            });
+                                          },
+                                          child: Text(
+                                            'Add',
+                                            style: TextStyle(
+                                                color: Colors.deepOrange),
+                                          ),
+                                        )
+                                  : Text(
+                                      getPreFuel,
+                                      style: GoogleFonts.cantataOne(
+                                        color: Color.fromRGBO(112, 112, 112, 1),
+                                      ),
+                                    ),
                             ],
                           ),
                         ),
@@ -242,34 +455,129 @@ class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
                                 color: Color.fromRGBO(112, 112, 112, 1),
                               ),
                             ),
-                            IconButton(
-                              icon: Icon(
-                                Icons.camera_alt,
-                                color: Color.fromRGBO(112, 112, 112, 1),
-                              ),
-                              onPressed: () {},
-                            ),
+                            Provider.of<DeliveryOrders>(context, listen: false)
+                                    .postImages
+                                    .isNotEmpty
+                                ? Container()
+                                : IconButton(
+                                    icon: Icon(
+                                      Icons.camera_alt,
+                                      color: Color.fromRGBO(112, 112, 112, 1),
+                                    ),
+                                    onPressed: () async {
+                                      if (postImgs.length == 6) {
+                                        showDialog(
+                                          context: context,
+                                          builder: (ctx) {
+                                            return AlertDialog(
+                                              title: Text(
+                                                  'No more than 6 images can be clicked!'),
+                                              actions: <Widget>[
+                                                FlatButton(
+                                                  onPressed: () {
+                                                    Navigator.of(ctx).pop();
+                                                  },
+                                                  child: Text('Okay'),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      } else {
+                                        var text = '';
+                                        switch (postImgs.length) {
+                                          case 0:
+                                            text = 'Front pic';
+                                            break;
+                                          case 1:
+                                            text = 'Left pic';
+                                            break;
+                                          case 2:
+                                            text = 'Rear pic';
+                                            break;
+                                          case 3:
+                                            text = 'Right pic';
+                                            break;
+                                          case 4:
+                                            text = 'Dashboard pic';
+                                            break;
+                                          case 5:
+                                            text = 'Number plate pic';
+                                            break;
+                                        }
+                                        await _showPopup(text);
+                                        var imgFile =
+                                            await ImagePicker.pickImage(
+                                          source: ImageSource.camera,
+                                          imageQuality: 30,
+                                        );
+                                        if (imgFile == null) {
+                                          return;
+                                        }
+                                        setState(() {
+                                          postImgs.add(imgFile);
+                                          postImgUrl.add(base64Encode(
+                                              imgFile.readAsBytesSync()));
+                                          postImgPathName.add(
+                                              imgFile.path.split('/').last);
+                                        });
+                                      }
+                                    },
+                                  ),
                           ],
                         ),
-                        GridView(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          children: <Widget>[
-                            _imageBuilder(context),
-                            _imageBuilder(context),
-                            _imageBuilder(context),
-                            _imageBuilder(context),
-                            _imageBuilder(context),
-                            _imageBuilder(context),
-                          ],
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3,
-                            childAspectRatio: 1,
-                            crossAxisSpacing: 5,
-                            mainAxisSpacing: 5,
-                          ),
-                        ),
+                        postImgUrl.isNotEmpty
+                            ? GridView(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 3,
+                                  childAspectRatio: 1,
+                                  crossAxisSpacing: 5,
+                                  mainAxisSpacing: 5,
+                                ),
+                                children: List.generate(
+                                  postImgUrl.length,
+                                  (index) {
+                                    return Container(
+                                      child: Image.memory(
+                                        Base64Decoder()
+                                            .convert(postImgUrl[index]),
+                                        fit: BoxFit.cover,
+                                        height: 300,
+                                        width: 300,
+                                      ),
+                                    );
+                                  },
+                                ),
+                              )
+                            : postImgs.isEmpty
+                                ? Container()
+                                : GridView(
+                                    shrinkWrap: true,
+                                    physics: NeverScrollableScrollPhysics(),
+                                    gridDelegate:
+                                        SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 3,
+                                      childAspectRatio: 1,
+                                      crossAxisSpacing: 5,
+                                      mainAxisSpacing: 5,
+                                    ),
+                                    children: List.generate(
+                                      postImgs.length,
+                                      (index) {
+                                        return Container(
+                                          child: Image.file(
+                                            postImgs[index],
+                                            fit: BoxFit.cover,
+                                            height: 300,
+                                            width: 300,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
                         SizedBox(height: 10),
                         Container(
                           width: double.infinity,
@@ -286,13 +594,32 @@ class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
                                 ),
                               ),
                               SizedBox(width: 15),
-                              FlatButton(
-                                onPressed: () {},
-                                child: Text(
-                                  'Add',
-                                  style: TextStyle(color: Colors.deepOrange),
-                                ),
-                              ),
+                              getPostOdometer == null
+                                  ? isPostOdometerSet
+                                      ? Expanded(
+                                          child: TextField(
+                                            controller: postOdometer,
+                                            keyboardType: TextInputType.number,
+                                          ),
+                                        )
+                                      : FlatButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              isPostOdometerSet = true;
+                                            });
+                                          },
+                                          child: Text(
+                                            'Add',
+                                            style: TextStyle(
+                                                color: Colors.deepOrange),
+                                          ),
+                                        )
+                                  : Text(
+                                      getPostOdometer,
+                                      style: GoogleFonts.cantataOne(
+                                        color: Color.fromRGBO(112, 112, 112, 1),
+                                      ),
+                                    ),
                             ],
                           ),
                         ),
@@ -312,13 +639,35 @@ class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
                                 ),
                               ),
                               SizedBox(width: 15),
-                              FlatButton(
-                                onPressed: () {},
-                                child: Text(
-                                  'Add',
-                                  style: TextStyle(color: Colors.deepOrange),
-                                ),
-                              ),
+                              getPostFuel == null
+                                  ? isPostFuelSet
+                                      ? Slider(
+                                          value: postrating,
+                                          onChanged: (newRating) {
+                                            setState(() {
+                                              postrating = newRating;
+                                            });
+                                          },
+                                          label: '$postrating',
+                                        )
+                                      : FlatButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              isPostFuelSet = true;
+                                            });
+                                          },
+                                          child: Text(
+                                            'Add',
+                                            style: TextStyle(
+                                                color: Colors.deepOrange),
+                                          ),
+                                        )
+                                  : Text(
+                                      getPostFuel,
+                                      style: GoogleFonts.cantataOne(
+                                        color: Color.fromRGBO(112, 112, 112, 1),
+                                      ),
+                                    ),
                             ],
                           ),
                         ),
