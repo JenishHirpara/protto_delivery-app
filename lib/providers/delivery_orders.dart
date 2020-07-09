@@ -190,6 +190,7 @@ class DeliveryOrders with ChangeNotifier {
       _preImages.clear();
       _preOdometerReading = null;
       _preFuelLevel = null;
+      notifyListeners();
       return;
     }
     _preImages.clear();
@@ -213,6 +214,7 @@ class DeliveryOrders with ChangeNotifier {
       _postImages.clear();
       _postOdometerReading = null;
       _postFuelLevel = null;
+      notifyListeners();
       return;
     }
     _postImages.clear();
@@ -227,32 +229,34 @@ class DeliveryOrders with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addpreimages(String bookingId, List<String> preImgUrl,
-      String preOdometer, double prerating, List<String> preImgPathName) async {
+  Future<void> addpreimages(
+    String bookingId,
+    List<String> preImgUrl,
+    String preOdometer,
+    double prerating,
+  ) async {
     final url =
         'http://stage.protto.in/api/shivangi/addpreserviceinspection.php';
     await http.post(url,
         body: json.encode({
           'booking_id': bookingId,
           'front_pic': preImgUrl[0],
-          'front_pic_name': preImgPathName[0],
           'left_pic': preImgUrl[1],
-          'left_pic_name': preImgPathName[1],
           'rear_pic': preImgUrl[2],
-          'rear_pic_name': preImgPathName[2],
           'right_pic': preImgUrl[3],
-          'right_pic_name': preImgPathName[3],
           'dashboard_pic': preImgUrl[4],
-          'dashboard_pic_name': preImgPathName[4],
           'number_pic': preImgUrl[5],
-          'number_pic_name': preImgPathName[5],
           'odometer_reading': preOdometer,
           'fuel_level': prerating,
         }));
   }
 
-  Future<void> addpostimages(String bookingId, List<String> postImgUrl,
-      String postOdometer, double postrating) async {
+  Future<void> addpostimages(
+    String bookingId,
+    List<String> postImgUrl,
+    String postOdometer,
+    double postrating,
+  ) async {
     final url = 'http://stage.protto.in/api/prina/adddeliveryinspection.php';
     await http.post(url,
         body: json.encode({

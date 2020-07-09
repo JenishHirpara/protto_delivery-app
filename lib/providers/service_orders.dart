@@ -23,6 +23,7 @@ class ServiceOrderItem with ChangeNotifier {
   final String customer;
   final String deId;
   final String deName;
+  final String specialRequest;
 
   ServiceOrderItem({
     @required this.id,
@@ -42,6 +43,7 @@ class ServiceOrderItem with ChangeNotifier {
     @required this.bikeNumber,
     @required this.bikeYear,
     @required this.status,
+    @required this.specialRequest,
     this.deId,
     this.deName,
   });
@@ -135,6 +137,7 @@ class ServiceOrders with ChangeNotifier {
             address: extractedData1['data'][i]['address'],
             flat: extractedData1['data'][i]['flat'],
             landmark: extractedData1['data'][i]['landmark'],
+            specialRequest: extractedData1['data'][i]['special_request'],
             date: extractedData1['data'][i]['date'],
             time: extractedData1['data'][i]['timestamp'],
             bikeid: extractedData1['data'][i]['bike_id'],
@@ -176,6 +179,7 @@ class ServiceOrders with ChangeNotifier {
       flat: item.flat,
       address: item.address,
       landmark: item.landmark,
+      specialRequest: item.specialRequest,
       deliveryType: item.deliveryType,
       customer: item.customer,
       make: item.make,
@@ -281,46 +285,5 @@ class ServiceOrders with ChangeNotifier {
     _postOdometerReading = extractedData['data']['odometer_reading'];
     _postFuelLevel = extractedData['data']['fuel_level'];
     notifyListeners();
-  }
-
-  Future<void> addpreimages(String bookingId, List<String> preImgUrl,
-      String preOdometer, double prerating, List<String> preImgPathName) async {
-    final url =
-        'http://stage.protto.in/api/shivangi/addpreserviceinspection.php';
-    await http.post(url,
-        body: json.encode({
-          'booking_id': bookingId,
-          'front_pic': preImgUrl[0],
-          'front_pic_name': preImgPathName[0],
-          'left_pic': preImgUrl[1],
-          'left_pic_name': preImgPathName[1],
-          'rear_pic': preImgUrl[2],
-          'rear_pic_name': preImgPathName[2],
-          'right_pic': preImgUrl[3],
-          'right_pic_name': preImgPathName[3],
-          'dashboard_pic': preImgUrl[4],
-          'dashboard_pic_name': preImgPathName[4],
-          'number_pic': preImgUrl[5],
-          'number_pic_name': preImgPathName[5],
-          'odometer_reading': preOdometer,
-          'fuel_level': prerating,
-        }));
-  }
-
-  Future<void> addpostimages(String bookingId, List<String> postImgUrl,
-      String postOdometer, double postrating) async {
-    final url = 'http://stage.protto.in/api/prina/adddeliveryinspection.php';
-    await http.post(url,
-        body: json.encode({
-          'booking_id': bookingId,
-          'front_pic': postImgUrl[0],
-          'left_pic': postImgUrl[1],
-          'rear_pic': postImgUrl[2],
-          'right_pic': postImgUrl[3],
-          'dashboard_pic': postImgUrl[4],
-          'number_pic': postImgUrl[5],
-          'odometer_reading': postOdometer,
-          'fuel_level': postrating,
-        }));
   }
 }

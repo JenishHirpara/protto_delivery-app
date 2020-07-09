@@ -185,6 +185,28 @@ class _JobsScreenState extends State<JobsScreen> {
                             ),
                           ),
                         ),
+                        Container(
+                          width: double.infinity,
+                          child: RichText(
+                            text: TextSpan(
+                              children: <TextSpan>[
+                                TextSpan(
+                                  text: 'Special Request: ',
+                                  style: GoogleFonts.cantataOne(
+                                    color: Color.fromRGBO(128, 128, 128, 1),
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: '${order.specialRequest}',
+                                  style: GoogleFonts.cantataOne(
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                         Divider(
                           thickness: 2,
                           color: Colors.grey,

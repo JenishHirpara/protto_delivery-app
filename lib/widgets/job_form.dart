@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:searchable_dropdown/searchable_dropdown.dart';
 
 import '../models/job.dart';
 import '../providers/service_orders.dart';
@@ -11,7 +12,7 @@ class JobForm extends StatefulWidget {
   JobForm({Key key, this.job}) : super(key: key);
   @override
   _JobFormState createState() => state;
-  bool isValid() => state.validate();
+  bool isValid() => state.validate() && job.name != null;
 }
 
 class _JobFormState extends State<JobForm> {
@@ -33,9 +34,30 @@ class _JobFormState extends State<JobForm> {
         shrinkWrap: true,
         physics: NeverScrollableScrollPhysics(),
         children: <Widget>[
-          DropdownButtonFormField(
+          // DropdownButtonFormField(
+          //   isExpanded: true,
+          //   decoration: InputDecoration(labelText: 'Job Name'),
+          //   items: Provider.of<ServiceOrders>(context, listen: false)
+          //       .partNames
+          //       .map<DropdownMenuItem>((value) {
+          //     return DropdownMenuItem<String>(
+          //       child: Text(value),
+          //       value: value,
+          //     );
+          //   }).toList(),
+          //   onChanged: (_) {},
+          //   onSaved: (value) {
+          //     widget.job.name = value;
+          //   },
+          //   validator: (value) {
+          //     if (value == null) {
+          //       return 'Please enter a job name';
+          //     }
+          //     return null;
+          //   },
+          // ),
+          SearchableDropdown.single(
             isExpanded: true,
-            decoration: InputDecoration(labelText: 'Job Name'),
             items: Provider.of<ServiceOrders>(context, listen: false)
                 .partNames
                 .map<DropdownMenuItem>((value) {
@@ -44,15 +66,19 @@ class _JobFormState extends State<JobForm> {
                 value: value,
               );
             }).toList(),
-            onChanged: (_) {},
-            onSaved: (value) {
-              widget.job.name = value;
-            },
             validator: (value) {
               if (value == null) {
                 return 'Please enter a job name';
               }
               return null;
+            },
+            value: widget.job.name,
+            hint: "Job Name",
+            searchHint: "Select one",
+            onChanged: (value) {
+              setState(() {
+                widget.job.name = value;
+              });
             },
           ),
           TextFormField(

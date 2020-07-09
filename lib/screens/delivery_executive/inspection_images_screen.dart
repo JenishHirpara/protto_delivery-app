@@ -22,8 +22,6 @@ class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
   List<File> postImgs = [];
   List<String> preImgUrl = [];
   List<String> postImgUrl = [];
-  List<String> preImgPathName = [];
-  List<String> postImgPathName = [];
   var _isInit = true;
   var isPreFuelSet = false;
   var isPostFuelSet = false;
@@ -48,14 +46,18 @@ class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
           .isEmpty) {
         await Provider.of<DeliveryOrders>(context, listen: false)
             .incrementstatus(bookingId, '1');
-        await Provider.of<DeliveryOrders>(context, listen: false).addpreimages(
-            bookingId, preImgUrl, preOdometer.text, prerating, preImgPathName);
+        await Provider.of<DeliveryOrders>(context, listen: false)
+            .addpreimages(bookingId, preImgUrl, preOdometer.text, prerating);
         Navigator.of(context).pop();
       } else {
         await Provider.of<DeliveryOrders>(context, listen: false)
             .incrementstatus(bookingId, '6');
         await Provider.of<DeliveryOrders>(context, listen: false).addpostimages(
-            bookingId, postImgUrl, postOdometer.text, postrating);
+          bookingId,
+          postImgUrl,
+          postOdometer.text,
+          postrating,
+        );
         Navigator.of(context).pop();
       }
     } on HttpException catch (error) {
@@ -280,8 +282,6 @@ class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
                                           preImgs.add(imgFile);
                                           preImgUrl.add(base64Encode(
                                               imgFile.readAsBytesSync()));
-                                          preImgPathName.add(
-                                              imgFile.path.split('/').last);
                                         });
                                       }
                                     },
@@ -518,8 +518,6 @@ class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
                                           postImgs.add(imgFile);
                                           postImgUrl.add(base64Encode(
                                               imgFile.readAsBytesSync()));
-                                          postImgPathName.add(
-                                              imgFile.path.split('/').last);
                                         });
                                       }
                                     },

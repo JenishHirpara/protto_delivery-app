@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:protto_delivery_ex_app/providers/service_station.dart';
 import 'package:provider/provider.dart';
 import 'package:location/location.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../providers/service_orders.dart';
+import '../../providers/service_station.dart';
 
 class DeliveryInfoScreen extends StatefulWidget {
   static const routeName = '/service-delivery-info';
