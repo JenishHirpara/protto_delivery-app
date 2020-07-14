@@ -51,14 +51,23 @@ class OrderMenuScreen extends StatelessWidget {
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
                 children: <Widget>[
+                  ServiceStationOrderMenu('Service/Jobs', JobsScreen.routeName,
+                      order, 'assets/images/jobs.png'),
                   ServiceStationOrderMenu(
-                      'Service/Jobs', JobsScreen.routeName, order),
+                      'Delivery Info',
+                      DeliveryInfoScreen.routeName,
+                      order,
+                      'assets/images/delivery_info.png'),
                   ServiceStationOrderMenu(
-                      'Delivery Info', DeliveryInfoScreen.routeName, order),
-                  ServiceStationOrderMenu('Inspection Details',
-                      InspectionImagesScreen.routeName, order),
+                      'Inspection Details',
+                      InspectionImagesScreen.routeName,
+                      order,
+                      'assets/images/inspection_details.png'),
                   ServiceStationOrderMenu(
-                      'Part Ordering', DeliveryInfoScreen.routeName, order),
+                      'Part Ordering',
+                      DeliveryInfoScreen.routeName,
+                      order,
+                      'assets/images/part_ordering.png'),
                 ],
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
