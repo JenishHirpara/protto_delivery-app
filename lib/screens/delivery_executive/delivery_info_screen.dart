@@ -51,49 +51,6 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
     _launchURL(url);
   }
 
-  void _pickBikeFromCustomer(String bookingId) async {
-    try {
-      await Provider.of<DeliveryOrders>(context, listen: false)
-          .approveotp(bookingId);
-      await Provider.of<DeliveryOrders>(context, listen: false)
-          .incrementstatus(bookingId, '2');
-      showDialog(
-        context: context,
-        builder: (ctx) {
-          return AlertDialog(
-            title: Text('Pick up bike from customer approved!'),
-            actions: <Widget>[
-              FlatButton(
-                child: Text('Okay'),
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
-    } on HttpException catch (error) {
-      showDialog(
-        context: context,
-        builder: (ctx) {
-          return AlertDialog(
-            title: Text('Error occurred!'),
-            content: Text(error.message),
-            actions: <Widget>[
-              FlatButton(
-                child: Text('Okay'),
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
-    }
-  }
-
   void _dropBikeToSS(String bookingId) async {
     try {
       await Provider.of<DeliveryOrders>(context, listen: false)
@@ -176,45 +133,60 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
     }
   }
 
-  void _bikeDroppedToCustomer(String bookingId) async {
-    try {
-      await Provider.of<DeliveryOrders>(context, listen: false)
-          .incrementstatus(bookingId, '8');
-      showDialog(
-        context: context,
-        builder: (ctx) {
-          return AlertDialog(
-            title: Text('Bike drop to customer approved!'),
-            actions: <Widget>[
-              FlatButton(
-                child: Text('Okay'),
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                },
+  Widget _otp(String otp) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(horizontal: 30),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: <Widget>[
+          Container(
+            width: MediaQuery.of(context).size.width * 0.14,
+            height: MediaQuery.of(context).size.width * 0.14,
+            color: Color.fromRGBO(200, 200, 200, 1),
+            child: Center(
+              child: Text(
+                otp[0],
+                style: TextStyle(fontSize: 20),
               ),
-            ],
-          );
-        },
-      );
-    } on HttpException catch (error) {
-      showDialog(
-        context: context,
-        builder: (ctx) {
-          return AlertDialog(
-            title: Text('Error occurred!'),
-            content: Text(error.message),
-            actions: <Widget>[
-              FlatButton(
-                child: Text('Okay'),
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                },
+            ),
+          ),
+          Container(
+            width: MediaQuery.of(context).size.width * 0.14,
+            height: MediaQuery.of(context).size.width * 0.14,
+            color: Color.fromRGBO(200, 200, 200, 1),
+            child: Center(
+              child: Text(
+                otp[1],
+                style: TextStyle(fontSize: 20),
               ),
-            ],
-          );
-        },
-      );
-    }
+            ),
+          ),
+          Container(
+            width: MediaQuery.of(context).size.width * 0.14,
+            height: MediaQuery.of(context).size.width * 0.14,
+            color: Color.fromRGBO(200, 200, 200, 1),
+            child: Center(
+              child: Text(
+                otp[2],
+                style: TextStyle(fontSize: 20),
+              ),
+            ),
+          ),
+          Container(
+            width: MediaQuery.of(context).size.width * 0.14,
+            height: MediaQuery.of(context).size.width * 0.14,
+            color: Color.fromRGBO(200, 200, 200, 1),
+            child: Center(
+              child: Text(
+                otp[3],
+                style: TextStyle(fontSize: 20),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -222,6 +194,7 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
     final order =
         ModalRoute.of(context).settings.arguments as DeliveryOrderItem;
     var otp = order.otp;
+    var deliveryOtp = order.deliveryOtp;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -407,96 +380,26 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
               ),
               SizedBox(height: 20),
               Text(
-                'OTP',
+                'Otp',
                 style: GoogleFonts.montserrat(fontSize: 18),
               ),
               SizedBox(height: 10),
-              Container(
-                width: double.infinity,
-                padding: EdgeInsets.symmetric(horizontal: 30),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.14,
-                      height: MediaQuery.of(context).size.width * 0.14,
-                      color: Color.fromRGBO(200, 200, 200, 1),
-                      child: Center(
-                        child: Text(
-                          otp[0],
-                          style: TextStyle(fontSize: 20),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.14,
-                      height: MediaQuery.of(context).size.width * 0.14,
-                      color: Color.fromRGBO(200, 200, 200, 1),
-                      child: Center(
-                        child: Text(
-                          otp[1],
-                          style: TextStyle(fontSize: 20),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.14,
-                      height: MediaQuery.of(context).size.width * 0.14,
-                      color: Color.fromRGBO(200, 200, 200, 1),
-                      child: Center(
-                        child: Text(
-                          otp[2],
-                          style: TextStyle(fontSize: 20),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.14,
-                      height: MediaQuery.of(context).size.width * 0.14,
-                      color: Color.fromRGBO(200, 200, 200, 1),
-                      child: Center(
-                        child: Text(
-                          otp[3],
-                          style: TextStyle(fontSize: 20),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              _otp(otp),
               SizedBox(height: 10),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 24),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.37,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.deepOrange),
-                      ),
-                      child: RaisedButton(
-                        child: Text('Picked'),
-                        color: Colors.white,
-                        elevation: 0,
-                        onPressed: () => _pickBikeFromCustomer(order.bookingId),
-                      ),
-                    ),
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.37,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.deepOrange),
-                      ),
-                      child: RaisedButton(
-                        child: Text('Dropped'),
-                        color: Colors.white,
-                        elevation: 0,
-                        onPressed: () => _dropBikeToSS(order.bookingId),
-                      ),
-                    ),
-                  ],
+                child: Container(
+                  width: double.infinity,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.deepOrange),
+                  ),
+                  child: RaisedButton(
+                    child: Text('Dropped'),
+                    color: Colors.white,
+                    elevation: 0,
+                    onPressed: () => _dropBikeToSS(order.bookingId),
+                  ),
                 ),
               ),
               SizedBox(height: 20),
@@ -553,100 +456,30 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
                         ),
                       ],
                     ),
-                    // SizedBox(height: 4),
-                    // Row(
-                    //   children: <Widget>[
-                    //     Text(
-                    //       'Date:',
-                    //       style: GoogleFonts.cantataOne(
-                    //         color: Color.fromRGBO(128, 128, 128, 1),
-                    //         fontWeight: FontWeight.bold,
-                    //       ),
-                    //     ),
-                    //     SizedBox(width: 8),
-                    //     Text(
-                    //       order.date,
-                    //       style: GoogleFonts.cantataOne(
-                    //         color: Colors.grey,
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
-                    // SizedBox(height: 4),
-                    // Row(
-                    //   children: <Widget>[
-                    //     Text(
-                    //       'Time:',
-                    //       style: GoogleFonts.cantataOne(
-                    //         color: Color.fromRGBO(128, 128, 128, 1),
-                    //         fontWeight: FontWeight.bold,
-                    //       ),
-                    //     ),
-                    //     SizedBox(width: 8),
-                    //     Text(
-                    //       order.time,
-                    //       style: GoogleFonts.cantataOne(
-                    //         color: Colors.grey,
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
-                    // SizedBox(height: 4),
-                    // Row(
-                    //   children: <Widget>[
-                    //     Text(
-                    //       'Del. Ex:',
-                    //       style: GoogleFonts.cantataOne(
-                    //         color: Color.fromRGBO(128, 128, 128, 1),
-                    //         fontWeight: FontWeight.bold,
-                    //       ),
-                    //     ),
-                    //     SizedBox(width: 8),
-                    //     Text(
-                    //       'Delivery Ex. Name',
-                    //       style: GoogleFonts.cantataOne(
-                    //         color: Colors.grey,
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
                   ],
                 ),
               ),
-              SizedBox(height: 50),
+              SizedBox(height: 20),
+              Text(
+                'Delivery Otp',
+                style: GoogleFonts.montserrat(fontSize: 18),
+              ),
+              SizedBox(height: 10),
+              _otp(deliveryOtp),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 24),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.37,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.deepOrange),
-                      ),
-                      child: RaisedButton(
-                        child: Text('Picked'),
-                        color: Colors.white,
-                        elevation: 0,
-                        onPressed: () => _bikePickedFromSS(order.bookingId),
-                      ),
-                    ),
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.37,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.deepOrange),
-                      ),
-                      child: RaisedButton(
-                        child: Text('Dropped'),
-                        color: Colors.white,
-                        elevation: 0,
-                        onPressed: () =>
-                            _bikeDroppedToCustomer(order.bookingId),
-                      ),
-                    ),
-                  ],
+                child: Container(
+                  width: double.infinity,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.deepOrange),
+                  ),
+                  child: RaisedButton(
+                    child: Text('Picked'),
+                    color: Colors.white,
+                    elevation: 0,
+                    onPressed: () => _bikePickedFromSS(order.bookingId),
+                  ),
                 ),
               ),
             ],

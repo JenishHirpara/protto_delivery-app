@@ -16,7 +16,7 @@ class JobItem extends StatelessWidget {
         ),
       ),
       subtitle: Text(
-        'Regular Service',
+        service['category'],
         style: GoogleFonts.cantataOne(
           color: Color.fromRGBO(150, 150, 150, 1),
         ),

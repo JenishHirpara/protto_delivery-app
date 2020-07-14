@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../models/http_exception.dart';
+
 class ServiceOrderItem with ChangeNotifier {
   final String id;
   final String bookingId;
@@ -231,9 +233,20 @@ class ServiceOrders with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addjob(String bookingId, int count, List<dynamic> data) async {
-    const url = 'http://stage.protto.in/api/shivangi/addjob.php';
-    await http.post(url,
+  Future<void> addjob(
+      String bookingId, int count, List<dynamic> data, String status) async {
+    final url = 'http://stage.protto.in/api/shivangi/bookingstatus.php';
+    final response = await http.patch(url,
+        body: json.encode({
+          'booking_id': bookingId,
+          'status': status,
+        }));
+    final extractedData = json.decode(response.body) as Map<String, dynamic>;
+    if (extractedData['message'] == 'status not incremented') {
+      throw HttpException('Jobs cannot be added right now');
+    }
+    const url1 = 'http://stage.protto.in/api/shivangi/addjob.php';
+    await http.post(url1,
         body: json.encode({
           'booking_id': bookingId,
           'count': count,
@@ -284,6 +297,14 @@ class ServiceOrders with ChangeNotifier {
     _postImages.add(extractedData['data']['number_pic']);
     _postOdometerReading = extractedData['data']['odometer_reading'];
     _postFuelLevel = extractedData['data']['fuel_level'];
+    notifyListeners();
+  }
+
+  void logout() {
+    _items.clear();
+    _services = null;
+    _partNames = null;
+    _jobs = null;
     notifyListeners();
   }
 }

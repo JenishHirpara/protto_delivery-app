@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/service_station.dart';
+import '../../providers/service_orders.dart';
 import '../../widgets/service_station_menu.dart';
 import './bookings_screen.dart';
 import './partner_details_screen.dart';
@@ -32,9 +33,34 @@ class MenuScreen extends StatelessWidget {
               color: Colors.deepOrange,
             ),
             onPressed: () {
-              Navigator.of(context)
-                  .pushReplacementNamed(WelcomeScreen.routeName);
-              Provider.of<ServiceStation>(context, listen: false).logout();
+              showDialog(
+                context: context,
+                builder: (ctx) {
+                  return AlertDialog(
+                    title: Text('Are you sure you want to logout?'),
+                    actions: <Widget>[
+                      FlatButton(
+                        onPressed: () {
+                          Navigator.of(ctx).pop();
+                          Navigator.of(context)
+                              .pushReplacementNamed(WelcomeScreen.routeName);
+                          Provider.of<ServiceStation>(context, listen: false)
+                              .logout();
+                          Provider.of<ServiceOrders>(context, listen: false)
+                              .logout();
+                        },
+                        child: Text('Yes'),
+                      ),
+                      FlatButton(
+                        onPressed: () {
+                          Navigator.of(ctx).pop();
+                        },
+                        child: Text('No'),
+                      ),
+                    ],
+                  );
+                },
+              );
             },
           ),
         ],

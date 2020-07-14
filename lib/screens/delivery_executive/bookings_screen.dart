@@ -52,9 +52,34 @@ class _BookingsScreenState extends State<BookingsScreen> {
               color: Colors.deepOrange,
             ),
             onPressed: () {
-              Navigator.of(context)
-                  .pushReplacementNamed(WelcomeScreen.routeName);
-              Provider.of<DeliveryExecutive>(context, listen: false).logout();
+              showDialog(
+                context: context,
+                builder: (ctx) {
+                  return AlertDialog(
+                    title: Text('Are you sure you want to logout?'),
+                    actions: <Widget>[
+                      FlatButton(
+                        onPressed: () {
+                          Navigator.of(ctx).pop();
+                          Navigator.of(context)
+                              .pushReplacementNamed(WelcomeScreen.routeName);
+                          Provider.of<DeliveryExecutive>(context, listen: false)
+                              .logout();
+                          Provider.of<DeliveryOrders>(context, listen: false)
+                              .logout();
+                        },
+                        child: Text('Yes'),
+                      ),
+                      FlatButton(
+                        onPressed: () {
+                          Navigator.of(ctx).pop();
+                        },
+                        child: Text('No'),
+                      ),
+                    ],
+                  );
+                },
+              );
             },
           ),
         ],

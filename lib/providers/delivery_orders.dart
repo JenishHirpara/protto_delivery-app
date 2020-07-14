@@ -23,6 +23,7 @@ class DeliveryOrderItem with ChangeNotifier {
   final String landmark;
   final String deliveryType;
   final String otp;
+  final String deliveryOtp;
 
   DeliveryOrderItem({
     @required this.id,
@@ -38,6 +39,7 @@ class DeliveryOrderItem with ChangeNotifier {
     @required this.deliveryType,
     @required this.customer,
     @required this.otp,
+    @required this.deliveryOtp,
     @required this.make,
     @required this.model,
     @required this.bikeNumber,
@@ -120,6 +122,7 @@ class DeliveryOrders with ChangeNotifier {
           flat: extractedData1['data'][i]['flat'],
           landmark: extractedData1['data'][i]['landmark'],
           otp: extractedData1['data'][i]['otp'],
+          deliveryOtp: extractedData1['data'][i]['delivery_otp'],
           date: extractedData1['data'][i]['date'],
           time: extractedData1['data'][i]['timestamp'],
           bikeid: extractedData1['data'][i]['bike_id'],
@@ -270,5 +273,11 @@ class DeliveryOrders with ChangeNotifier {
           'odometer_reading': postOdometer,
           'fuel_level': postrating,
         }));
+  }
+
+  void logout() {
+    _items.clear();
+    _services = null;
+    notifyListeners();
   }
 }

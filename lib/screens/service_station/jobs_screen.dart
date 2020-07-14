@@ -7,6 +7,7 @@ import '../../providers/service_orders.dart';
 import '../../widgets/job_item.dart';
 import '../../widgets/job_form.dart';
 import '../../models/job.dart';
+import '../../models/http_exception.dart';
 
 class JobsScreen extends StatefulWidget {
   static const routeName = '/service-jobs';
@@ -46,9 +47,31 @@ class _JobsScreenState extends State<JobsScreen> {
       setState(() {
         _isLoading = true;
       });
-      await Provider.of<ServiceOrders>(context, listen: false)
-          .addjob(order.bookingId, approvedForm.length, _data);
-      Navigator.of(context).pop();
+      try {
+        await Provider.of<ServiceOrders>(context, listen: false)
+            .addjob(order.bookingId, approvedForm.length, _data, order.status);
+        Navigator.of(context).pop();
+      } on HttpException catch (error) {
+        showDialog(
+          context: context,
+          builder: (ctx) {
+            return AlertDialog(
+              title: Text(error.message),
+              actions: <Widget>[
+                FlatButton(
+                  onPressed: () {
+                    Navigator.of(ctx).pop();
+                  },
+                  child: Text('Okay'),
+                ),
+              ],
+            );
+          },
+        );
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
