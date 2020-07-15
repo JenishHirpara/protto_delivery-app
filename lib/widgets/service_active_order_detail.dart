@@ -44,7 +44,7 @@ class ServiceActiveOrderDetail extends StatelessWidget {
       child: Row(
         children: <Widget>[
           Expanded(
-            flex: 8,
+            flex: 10,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
@@ -59,23 +59,29 @@ class ServiceActiveOrderDetail extends StatelessWidget {
                     ),
                   ),
                 ),
-                Row(
-                  children: <Widget>[
-                    Text(
-                      'Bike:',
-                      style: GoogleFonts.cantataOne(
-                        color: Color.fromRGBO(128, 128, 128, 1),
-                        fontWeight: FontWeight.bold,
-                      ),
+                Container(
+                  width: double.infinity,
+                  child: RichText(
+                    text: TextSpan(
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: 'Bike: ',
+                          style: GoogleFonts.cantataOne(
+                            color: Color.fromRGBO(128, 128, 128, 1),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        TextSpan(
+                          text: '${order.make} ${order.model}',
+                          style: GoogleFonts.cantataOne(
+                            color: Colors.grey,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
                     ),
-                    SizedBox(width: 8),
-                    Text(
-                      '${order.make} ${order.model}',
-                      style: GoogleFonts.cantataOne(
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
                 SizedBox(height: 4),
                 Row(
