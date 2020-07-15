@@ -83,15 +83,24 @@ class MenuScreen extends StatelessWidget {
               padding: EdgeInsets.all(0),
               physics: NeverScrollableScrollPhysics(),
               children: <Widget>[
-                ServiceStationMenu('Bookings', BookingsScreen.routeName),
+                ServiceStationMenu('Bookings', BookingsScreen.routeName,
+                    'assets/images/bookings.png'),
                 ServiceStationMenu(
-                    'Delivery Executives', DeliveryExecutivesScreen.routeName),
+                    'Delivery Executives',
+                    DeliveryExecutivesScreen.routeName,
+                    'assets/images/delivery_executives.png'),
                 ServiceStationMenu(
-                    'Inventory Management', BookingsScreen.routeName),
-                ServiceStationMenu('Reports', BookingsScreen.routeName),
+                    'Inventory Management',
+                    BookingsScreen.routeName,
+                    'assets/images/inventory_management.png'),
+                ServiceStationMenu('Reports', BookingsScreen.routeName,
+                    'assets/images/reports.png'),
                 ServiceStationMenu(
-                    'Protto Partner Details', PartnerDetailsScreen.routeName),
-                ServiceStationMenu('Settlements', BookingsScreen.routeName),
+                    'Protto Partner Details',
+                    PartnerDetailsScreen.routeName,
+                    'assets/images/protto_patner_details.png'),
+                ServiceStationMenu('Settlements', BookingsScreen.routeName,
+                    'assets/images/settlements.png'),
               ],
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,

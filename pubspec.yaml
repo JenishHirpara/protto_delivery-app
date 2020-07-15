@@ -55,6 +55,17 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/protto-logo.png
+    - assets/images/bookings.png
+    - assets/images/delivery_executives.png
+    - assets/images/inventory_management.png
+    - assets/images/protto_patner_details.png
+    - assets/images/reports.png
+    - assets/images/settlements.png
+    - assets/images/jobs.png
+    - assets/images/inspection_details.png
+    - assets/images/delivery_info.png
+    - assets/images/part_ordering.png
+
   #   - images/a_dot_ham.jpeg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

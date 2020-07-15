@@ -6,8 +6,10 @@ class ServiceStationOrderMenu extends StatelessWidget {
   final String title;
   final String routeName;
   final ServiceOrderItem order;
+  final String imageurl;
 
-  ServiceStationOrderMenu(this.title, this.routeName, this.order);
+  ServiceStationOrderMenu(
+      this.title, this.routeName, this.order, this.imageurl);
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +21,7 @@ class ServiceStationOrderMenu extends StatelessWidget {
           child: Container(
             width: mediaQuery.size.width * 0.3,
             height: mediaQuery.size.width * 0.3,
-            color: Colors.grey,
+            child: Image(image: AssetImage(imageurl)),
           ),
           onTap: () {
             Navigator.of(context).pushNamed(routeName, arguments: order);
