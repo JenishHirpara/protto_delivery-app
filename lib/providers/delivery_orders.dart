@@ -21,6 +21,8 @@ class DeliveryOrderItem with ChangeNotifier {
   final String flat;
   final String address;
   final String landmark;
+  final String latitude;
+  final String longitude;
   final String deliveryType;
   final String otp;
   final String deliveryOtp;
@@ -36,6 +38,8 @@ class DeliveryOrderItem with ChangeNotifier {
     @required this.flat,
     @required this.address,
     @required this.landmark,
+    @required this.latitude,
+    @required this.longitude,
     @required this.deliveryType,
     @required this.customer,
     @required this.otp,
@@ -121,6 +125,8 @@ class DeliveryOrders with ChangeNotifier {
           address: extractedData1['data'][i]['address'],
           flat: extractedData1['data'][i]['flat'],
           landmark: extractedData1['data'][i]['landmark'],
+          latitude: extractedData1['data'][i]['lat'],
+          longitude: extractedData1['data'][i]['lon'],
           otp: extractedData1['data'][i]['otp'],
           deliveryOtp: extractedData1['data'][i]['delivery_otp'],
           date: extractedData1['data'][i]['date'],

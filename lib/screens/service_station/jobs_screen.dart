@@ -49,7 +49,7 @@ class _JobsScreenState extends State<JobsScreen> {
       });
       try {
         await Provider.of<ServiceOrders>(context, listen: false)
-            .addjob(order.bookingId, approvedForm.length, _data, order.status);
+            .addjob(order.bookingId, approvedForm.length, _data, '4');
         Navigator.of(context).pop();
       } on HttpException catch (error) {
         showDialog(

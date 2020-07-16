@@ -45,9 +45,8 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
       return;
     }
     _locationData = await _location.getLocation();
-    String query = Uri.encodeComponent(order.address);
     var url =
-        'https://www.google.com/maps/dir/?api=1&origin=${_locationData.latitude},${_locationData.longitude}&destination=$query&travelmode=driving&dir_action=navigate';
+        'https://www.google.com/maps/dir/?api=1&origin=${_locationData.latitude},${_locationData.longitude}&destination=${order.latitude},${order.longitude}&travelmode=driving&dir_action=navigate';
     _launchURL(url);
   }
 

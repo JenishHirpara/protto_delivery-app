@@ -21,6 +21,8 @@ class ServiceOrderItem with ChangeNotifier {
   final String flat;
   final String address;
   final String landmark;
+  final String latitude;
+  final String longitude;
   final String deliveryType;
   final String customer;
   final String deId;
@@ -38,6 +40,8 @@ class ServiceOrderItem with ChangeNotifier {
     @required this.flat,
     @required this.address,
     @required this.landmark,
+    @required this.latitude,
+    @required this.longitude,
     @required this.deliveryType,
     @required this.customer,
     @required this.make,
@@ -139,6 +143,8 @@ class ServiceOrders with ChangeNotifier {
             address: extractedData1['data'][i]['address'],
             flat: extractedData1['data'][i]['flat'],
             landmark: extractedData1['data'][i]['landmark'],
+            latitude: extractedData1['data'][i]['lat'],
+            longitude: extractedData1['data'][i]['lon'],
             specialRequest: extractedData1['data'][i]['special_request'],
             date: extractedData1['data'][i]['date'],
             time: extractedData1['data'][i]['timestamp'],
@@ -181,6 +187,8 @@ class ServiceOrders with ChangeNotifier {
       flat: item.flat,
       address: item.address,
       landmark: item.landmark,
+      latitude: item.latitude,
+      longitude: item.longitude,
       specialRequest: item.specialRequest,
       deliveryType: item.deliveryType,
       customer: item.customer,
