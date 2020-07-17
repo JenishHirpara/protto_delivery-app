@@ -65,7 +65,12 @@ flutter:
     - assets/images/inspection_details.png
     - assets/images/delivery_info.png
     - assets/images/part_ordering.png
-
+    - assets/images/dashboard.png
+    - assets/images/front.png
+    - assets/images/left.png
+    - assets/images/number_plate.png
+    - assets/images/rear.png
+    - assets/images/right.png
   #   - images/a_dot_ham.jpeg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

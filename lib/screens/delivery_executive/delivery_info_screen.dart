@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:location/location.dart';
-import 'package:protto_delivery_ex_app/providers/delivery_executive.dart';
+import '../../providers/delivery_executive.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
 
@@ -94,7 +94,7 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
   void _bikePickedFromSS(String bookingId) async {
     try {
       await Provider.of<DeliveryOrders>(context, listen: false)
-          .incrementstatus(bookingId, '7');
+          .incrementstatus(bookingId, '6');
       showDialog(
         context: context,
         builder: (ctx) {
@@ -135,9 +135,9 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
   Widget _otp(String otp) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.symmetric(horizontal: 30),
+      padding: EdgeInsets.symmetric(horizontal: 24),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Container(
             width: MediaQuery.of(context).size.width * 0.14,
@@ -394,7 +394,7 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
                     border: Border.all(color: Colors.deepOrange),
                   ),
                   child: RaisedButton(
-                    child: Text('Dropped'),
+                    child: Text('Dropped To SS'),
                     color: Colors.white,
                     elevation: 0,
                     onPressed: () => _dropBikeToSS(order.bookingId),
@@ -465,6 +465,7 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
               ),
               SizedBox(height: 10),
               _otp(deliveryOtp),
+              SizedBox(height: 10),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 24),
                 child: Container(
@@ -474,7 +475,7 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
                     border: Border.all(color: Colors.deepOrange),
                   ),
                   child: RaisedButton(
-                    child: Text('Picked'),
+                    child: Text('Picked From SS'),
                     color: Colors.white,
                     elevation: 0,
                     onPressed: () => _bikePickedFromSS(order.bookingId),
