@@ -33,7 +33,7 @@ class ServiceActiveOrderDetail extends StatelessWidget {
     final order = Provider.of<ServiceOrderItem>(context, listen: false);
     return Container(
       width: double.infinity,
-      height: order.landmark != '' ? 250 : 235,
+      height: order.landmark != '' ? 260 : 245,
       decoration: BoxDecoration(
         border: Border.all(
           color: Colors.deepOrange,
@@ -151,12 +151,14 @@ class ServiceActiveOrderDetail extends StatelessWidget {
                           style: GoogleFonts.cantataOne(
                             color: Color.fromRGBO(128, 128, 128, 1),
                             fontWeight: FontWeight.bold,
+                            fontSize: 16,
                           ),
                         ),
                         TextSpan(
                           text: '${order.flat}, ${order.address}',
                           style: GoogleFonts.cantataOne(
                             color: Colors.grey,
+                            fontSize: 14,
                           ),
                         ),
                       ],
@@ -167,7 +169,7 @@ class ServiceActiveOrderDetail extends StatelessWidget {
             ),
           ),
           Expanded(
-            flex: 3,
+            flex: 2,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.end,

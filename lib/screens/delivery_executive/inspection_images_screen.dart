@@ -51,7 +51,7 @@ class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
         Navigator.of(context).pop();
       } else {
         await Provider.of<DeliveryOrders>(context, listen: false)
-            .incrementstatus(bookingId, '6');
+            .incrementstatus(bookingId, '7');
         await Provider.of<DeliveryOrders>(context, listen: false).addpostimages(
           bookingId,
           postImgUrl,
@@ -82,12 +82,22 @@ class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
     }
   }
 
-  Future<void> _showPopup(String text) {
+  Future<void> _showPopup(String text, String image) {
     return showDialog(
       context: context,
       builder: (ctx) {
         return AlertDialog(
-          title: Text(text),
+          title: Text(
+            text,
+            textAlign: TextAlign.center,
+          ),
+          content: Container(
+              width: 100,
+              height: 100,
+              child: Image.asset(
+                image,
+                fit: BoxFit.cover,
+              )),
           actions: <Widget>[
             FlatButton(
               onPressed: () {
@@ -247,33 +257,42 @@ class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
                                         );
                                       } else {
                                         var text = '';
+                                        var image = '';
                                         switch (preImgs.length) {
                                           case 0:
                                             text = 'Front pic';
+                                            image = 'assets/images/front.png';
                                             break;
                                           case 1:
                                             text = 'Left pic';
+                                            image = 'assets/images/left.png';
                                             break;
                                           case 2:
                                             text = 'Rear pic';
+                                            image = 'assets/images/rear.png';
                                             break;
                                           case 3:
                                             text = 'Right pic';
+                                            image = 'assets/images/right.png';
                                             break;
                                           case 4:
                                             text = 'Dashboard pic';
+                                            image =
+                                                'assets/images/dashboard.png';
                                             break;
                                           case 5:
                                             text = 'Number plate pic';
+                                            image =
+                                                'assets/images/number_plate.png';
                                             break;
                                         }
-                                        await _showPopup(text);
+                                        await _showPopup(text, image);
                                         var imgFile =
                                             await ImagePicker.pickImage(
                                           source: ImageSource.camera,
                                           // maxHeight: 640,
                                           // maxWidth: 640,
-                                          imageQuality: 30,
+                                          imageQuality: 25,
                                         );
                                         if (imgFile == null) {
                                           return;
@@ -485,31 +504,40 @@ class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
                                         );
                                       } else {
                                         var text = '';
+                                        var image = '';
                                         switch (postImgs.length) {
                                           case 0:
                                             text = 'Front pic';
+                                            image = 'assets/images/front.png';
                                             break;
                                           case 1:
                                             text = 'Left pic';
+                                            image = 'assets/images/left.png';
                                             break;
                                           case 2:
                                             text = 'Rear pic';
+                                            image = 'assets/images/rear.png';
                                             break;
                                           case 3:
                                             text = 'Right pic';
+                                            image = 'assets/images/right.png';
                                             break;
                                           case 4:
                                             text = 'Dashboard pic';
+                                            image =
+                                                'assets/images/dashboard.png';
                                             break;
                                           case 5:
                                             text = 'Number plate pic';
+                                            image =
+                                                'assets/images/number_plate.png';
                                             break;
                                         }
-                                        await _showPopup(text);
+                                        await _showPopup(text, image);
                                         var imgFile =
                                             await ImagePicker.pickImage(
                                           source: ImageSource.camera,
-                                          imageQuality: 30,
+                                          imageQuality: 25,
                                         );
                                         if (imgFile == null) {
                                           return;

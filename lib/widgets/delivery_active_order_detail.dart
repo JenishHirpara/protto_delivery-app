@@ -31,7 +31,7 @@ class DeliveryActiveOrderDetail extends StatelessWidget {
     final order = Provider.of<DeliveryOrderItem>(context, listen: false);
     return Container(
       width: double.infinity,
-      height: order.landmark != '' ? 250 : 230,
+      height: order.landmark != '' ? 260 : 245,
       decoration: BoxDecoration(
         border: Border.all(
           color: Colors.deepOrange,
@@ -42,7 +42,7 @@ class DeliveryActiveOrderDetail extends StatelessWidget {
       child: Row(
         children: <Widget>[
           Expanded(
-            flex: 8,
+            flex: 10,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
@@ -57,23 +57,29 @@ class DeliveryActiveOrderDetail extends StatelessWidget {
                     ),
                   ),
                 ),
-                Row(
-                  children: <Widget>[
-                    Text(
-                      'Bike',
-                      style: GoogleFonts.cantataOne(
-                        color: Color.fromRGBO(128, 128, 128, 1),
-                        fontWeight: FontWeight.bold,
-                      ),
+                Container(
+                  width: double.infinity,
+                  child: RichText(
+                    text: TextSpan(
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: 'Bike: ',
+                          style: GoogleFonts.cantataOne(
+                            color: Color.fromRGBO(128, 128, 128, 1),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        TextSpan(
+                          text: '${order.make} ${order.model}',
+                          style: GoogleFonts.cantataOne(
+                            color: Colors.grey,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
                     ),
-                    SizedBox(width: 8),
-                    Text(
-                      '${order.make} ${order.model}',
-                      style: GoogleFonts.cantataOne(
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
                 SizedBox(height: 4),
                 Row(
@@ -85,7 +91,7 @@ class DeliveryActiveOrderDetail extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(width: 8),
+                    SizedBox(width: 4),
                     Text(
                       order.bookingId,
                       style: GoogleFonts.cantataOne(
@@ -104,7 +110,7 @@ class DeliveryActiveOrderDetail extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(width: 8),
+                    SizedBox(width: 4),
                     Text(
                       order.date,
                       style: GoogleFonts.cantataOne(
@@ -123,7 +129,7 @@ class DeliveryActiveOrderDetail extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(width: 8),
+                    SizedBox(width: 4),
                     Text(
                       order.time,
                       style: GoogleFonts.cantataOne(
@@ -143,12 +149,14 @@ class DeliveryActiveOrderDetail extends StatelessWidget {
                           style: GoogleFonts.cantataOne(
                             color: Color.fromRGBO(128, 128, 128, 1),
                             fontWeight: FontWeight.bold,
+                            fontSize: 16,
                           ),
                         ),
                         TextSpan(
                           text: '${order.flat}, ${order.address}',
                           style: GoogleFonts.cantataOne(
                             color: Colors.grey,
+                            fontSize: 14,
                           ),
                         ),
                       ],
@@ -159,7 +167,7 @@ class DeliveryActiveOrderDetail extends StatelessWidget {
             ),
           ),
           Expanded(
-            flex: 3,
+            flex: 2,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.end,
