@@ -5,16 +5,18 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:photo_view/photo_view.dart';
 
-import '../../providers/service_orders.dart';
+import '../../providers/delivery_orders.dart';
 
-class InspectionImagesScreen extends StatefulWidget {
-  static const routeName = '/service-inspection-images';
+class DisplayInspectionImagesScreen extends StatefulWidget {
+  static const routeName = '/display-inspection-images';
 
   @override
-  _InspectionImagesScreenState createState() => _InspectionImagesScreenState();
+  _DisplayInspectionImagesScreenState createState() =>
+      _DisplayInspectionImagesScreenState();
 }
 
-class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
+class _DisplayInspectionImagesScreenState
+    extends State<DisplayInspectionImagesScreen> {
   var _isLoading = true;
   var _isInit = true;
   List<String> preImgUrl = [];
@@ -23,6 +25,15 @@ class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
   var getPostOdometer;
   var getPreFuel;
   var getPostFuel;
+
+  List<String> _names = [
+    'Front',
+    'Left',
+    'Rear',
+    'Right',
+    'Dash-\nBoard',
+    'No.Plate'
+  ];
 
   void _showDialog(int index) {
     showDialog(
@@ -50,26 +61,26 @@ class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
   @override
   void didChangeDependencies() async {
     if (_isInit) {
-      await Provider.of<ServiceOrders>(context, listen: false).getpreimages(
-          (ModalRoute.of(context).settings.arguments as ServiceOrderItem)
+      await Provider.of<DeliveryOrders>(context, listen: false).getpreimages(
+          (ModalRoute.of(context).settings.arguments as DeliveryOrderItem)
               .bookingId);
-      await Provider.of<ServiceOrders>(context, listen: false).getpostimages(
-          (ModalRoute.of(context).settings.arguments as ServiceOrderItem)
+      await Provider.of<DeliveryOrders>(context, listen: false).getpostimages(
+          (ModalRoute.of(context).settings.arguments as DeliveryOrderItem)
               .bookingId);
       setState(() {
         _isLoading = false;
       });
-      preImgUrl = Provider.of<ServiceOrders>(context, listen: false).preImages;
+      preImgUrl = Provider.of<DeliveryOrders>(context, listen: false).preImages;
       postImgUrl =
-          Provider.of<ServiceOrders>(context, listen: false).postImages;
-      getPreOdometer =
-          Provider.of<ServiceOrders>(context, listen: false).preOdometerReading;
-      getPostOdometer = Provider.of<ServiceOrders>(context, listen: false)
+          Provider.of<DeliveryOrders>(context, listen: false).postImages;
+      getPreOdometer = Provider.of<DeliveryOrders>(context, listen: false)
+          .preOdometerReading;
+      getPostOdometer = Provider.of<DeliveryOrders>(context, listen: false)
           .postOdometerReading;
       getPreFuel =
-          Provider.of<ServiceOrders>(context, listen: false).preFuelLevel;
+          Provider.of<DeliveryOrders>(context, listen: false).preFuelLevel;
       getPostFuel =
-          Provider.of<ServiceOrders>(context, listen: false).postFuelLevel;
+          Provider.of<DeliveryOrders>(context, listen: false).postFuelLevel;
     }
     _isInit = false;
     super.didChangeDependencies();
@@ -77,21 +88,23 @@ class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final order = ModalRoute.of(context).settings.arguments as ServiceOrderItem;
+    final order =
+        ModalRoute.of(context).settings.arguments as DeliveryOrderItem;
     return Scaffold(
       appBar: AppBar(
         title: Text(
           'Inspection Images',
-          style: GoogleFonts.montserrat(
-            color: Color.fromRGBO(241, 93, 36, 1),
+          style: TextStyle(
+            fontFamily: 'Montserrat',
+            color: Theme.of(context).primaryColor,
             fontSize: 24,
             fontWeight: FontWeight.w500,
           ),
         ),
         leading: InkWell(
           child: Icon(
-            Icons.arrow_back,
-            color: Colors.black,
+            Icons.arrow_back_ios,
+            color: Color.fromRGBO(112, 112, 112, 1),
           ),
           onTap: () {
             Navigator.of(context).pop();
@@ -156,7 +169,8 @@ class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
                     padding: EdgeInsets.symmetric(horizontal: 36),
                     child: Text(
                       'Pre Service Inspection',
-                      style: GoogleFonts.montserrat(
+                      style: TextStyle(
+                        fontFamily: 'Montserrat',
                         color: Color.fromRGBO(112, 112, 112, 1),
                         fontWeight: FontWeight.w500,
                         fontSize: 16,
@@ -184,11 +198,25 @@ class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
                               (index) {
                                 return Container(
                                   child: InkWell(
-                                    child: Image.memory(
-                                      Base64Decoder().convert(preImgUrl[index]),
-                                      fit: BoxFit.cover,
-                                      height: 300,
-                                      width: 300,
+                                    child: GridTile(
+                                      footer: GridTileBar(
+                                        backgroundColor:
+                                            Color.fromRGBO(220, 220, 220, 0.4),
+                                        title: Text(
+                                          _names[index],
+                                          textAlign: TextAlign.start,
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                      child: Image.memory(
+                                        Base64Decoder()
+                                            .convert(preImgUrl[index]),
+                                        fit: BoxFit.cover,
+                                        height: 300,
+                                        width: 300,
+                                      ),
                                     ),
                                     onTap: () => _showDialog(index),
                                   ),
@@ -219,7 +247,7 @@ class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
                             ? Text(
                                 'not set',
                                 style: TextStyle(
-                                  color: Colors.deepOrange,
+                                  color: Theme.of(context).primaryColor,
                                   fontSize: 15,
                                 ),
                               )
@@ -252,7 +280,7 @@ class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
                             ? Text(
                                 'not set',
                                 style: TextStyle(
-                                  color: Colors.deepOrange,
+                                  color: Theme.of(context).primaryColor,
                                   fontSize: 15,
                                 ),
                               )
@@ -270,7 +298,8 @@ class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
                     padding: EdgeInsets.symmetric(horizontal: 36),
                     child: Text(
                       'Pre Delivery Inspection',
-                      style: GoogleFonts.montserrat(
+                      style: TextStyle(
+                        fontFamily: 'Montserrat',
                         color: Color.fromRGBO(112, 112, 112, 1),
                         fontWeight: FontWeight.w500,
                         fontSize: 16,
@@ -298,12 +327,25 @@ class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
                               (index) {
                                 return Container(
                                   child: InkWell(
-                                    child: Image.memory(
-                                      Base64Decoder()
-                                          .convert(postImgUrl[index]),
-                                      fit: BoxFit.cover,
-                                      height: 300,
-                                      width: 300,
+                                    child: GridTile(
+                                      footer: GridTileBar(
+                                        backgroundColor:
+                                            Color.fromRGBO(220, 220, 220, 0.4),
+                                        title: Text(
+                                          _names[index],
+                                          textAlign: TextAlign.start,
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                      child: Image.memory(
+                                        Base64Decoder()
+                                            .convert(postImgUrl[index]),
+                                        fit: BoxFit.cover,
+                                        height: 300,
+                                        width: 300,
+                                      ),
                                     ),
                                     onTap: () => _showDialog(index),
                                   ),
@@ -334,7 +376,7 @@ class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
                             ? Text(
                                 'not set',
                                 style: TextStyle(
-                                  color: Colors.deepOrange,
+                                  color: Theme.of(context).primaryColor,
                                   fontSize: 15,
                                 ),
                               )
@@ -367,7 +409,7 @@ class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
                             ? Text(
                                 'not set',
                                 style: TextStyle(
-                                  color: Colors.deepOrange,
+                                  color: Theme.of(context).primaryColor,
                                   fontSize: 15,
                                 ),
                               )

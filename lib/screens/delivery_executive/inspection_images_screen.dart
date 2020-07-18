@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
@@ -18,6 +19,7 @@ class InspectionImagesScreen extends StatefulWidget {
 
 class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
   var _isLoading = true;
+  var status;
   List<File> preImgs = [];
   List<File> postImgs = [];
   List<String> preImgUrl = [];
@@ -31,10 +33,6 @@ class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
   var postrating = 0.0;
   var preOdometer = TextEditingController();
   var postOdometer = TextEditingController();
-  var getPreOdometer;
-  var getPostOdometer;
-  var getPreFuel;
-  var getPostFuel;
 
   void _savePage(BuildContext context, String bookingId) async {
     try {
@@ -45,13 +43,15 @@ class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
           .preImages
           .isEmpty) {
         await Provider.of<DeliveryOrders>(context, listen: false)
-            .incrementstatus(bookingId, '1');
+            .incrementstatus(bookingId, '1',
+                'Inspection images cannot be uploaded right now');
         await Provider.of<DeliveryOrders>(context, listen: false)
             .addpreimages(bookingId, preImgUrl, preOdometer.text, prerating);
         Navigator.of(context).pop();
       } else {
         await Provider.of<DeliveryOrders>(context, listen: false)
-            .incrementstatus(bookingId, '7');
+            .incrementstatus(bookingId, '7',
+                'Inspection images cannot be uploaded right now');
         await Provider.of<DeliveryOrders>(context, listen: false).addpostimages(
           bookingId,
           postImgUrl,
@@ -92,12 +92,13 @@ class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
             textAlign: TextAlign.center,
           ),
           content: Container(
-              width: 100,
-              height: 100,
-              child: Image.asset(
-                image,
-                fit: BoxFit.cover,
-              )),
+            width: 100,
+            height: 100,
+            child: Image.asset(
+              image,
+              fit: BoxFit.cover,
+            ),
+          ),
           actions: <Widget>[
             FlatButton(
               onPressed: () {
@@ -114,26 +115,13 @@ class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
   @override
   void didChangeDependencies() async {
     if (_isInit) {
-      await Provider.of<DeliveryOrders>(context, listen: false).getpreimages(
-          (ModalRoute.of(context).settings.arguments as DeliveryOrderItem)
-              .bookingId);
-      await Provider.of<DeliveryOrders>(context, listen: false).getpostimages(
-          (ModalRoute.of(context).settings.arguments as DeliveryOrderItem)
-              .bookingId);
+      status = await Provider.of<DeliveryOrders>(context, listen: false)
+          .fetchBooking(
+              (ModalRoute.of(context).settings.arguments as DeliveryOrderItem)
+                  .bookingId);
       setState(() {
         _isLoading = false;
       });
-      preImgUrl = Provider.of<DeliveryOrders>(context, listen: false).preImages;
-      postImgUrl =
-          Provider.of<DeliveryOrders>(context, listen: false).postImages;
-      getPreOdometer = Provider.of<DeliveryOrders>(context, listen: false)
-          .preOdometerReading;
-      getPostOdometer = Provider.of<DeliveryOrders>(context, listen: false)
-          .postOdometerReading;
-      getPreFuel =
-          Provider.of<DeliveryOrders>(context, listen: false).preFuelLevel;
-      getPostFuel =
-          Provider.of<DeliveryOrders>(context, listen: false).postFuelLevel;
     }
     _isInit = false;
     super.didChangeDependencies();
@@ -189,17 +177,34 @@ class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: <Widget>[
-                            Text(
-                              order.customer,
-                              style: GoogleFonts.montserrat(
-                                color: Colors.deepOrange,
-                                fontSize: 18,
+                            Expanded(
+                              flex: 1,
+                              child: Text(
+                                order.customer,
+                                style: GoogleFonts.montserrat(
+                                  color: Colors.deepOrange,
+                                  fontSize: 18,
+                                ),
                               ),
                             ),
-                            Text(
-                              '${order.make} ${order.model}',
-                              style: GoogleFonts.montserrat(
-                                fontSize: 18,
+                            Expanded(
+                              flex: 1,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    '${order.make}',
+                                    style: GoogleFonts.montserrat(
+                                      fontSize: 10,
+                                    ),
+                                  ),
+                                  Text(
+                                    '${order.model}',
+                                    style: GoogleFonts.montserrat(
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
@@ -211,27 +216,26 @@ class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
                       ],
                     ),
                   ),
-                  Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.symmetric(horizontal: 38, vertical: 0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Text(
-                              'Pre Service Inspection',
-                              style: GoogleFonts.montserrat(
-                                fontSize: 18,
-                                color: Color.fromRGBO(112, 112, 112, 1),
-                              ),
-                            ),
-                            Provider.of<DeliveryOrders>(context, listen: false)
-                                    .preImages
-                                    .isNotEmpty
-                                ? Container()
-                                : IconButton(
+                  status == '1'
+                      ? Container(
+                          width: double.infinity,
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 38, vertical: 0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Text(
+                                    'Pre Service Inspection',
+                                    style: GoogleFonts.montserrat(
+                                      fontSize: 18,
+                                      color: Color.fromRGBO(112, 112, 112, 1),
+                                    ),
+                                  ),
+                                  IconButton(
                                     icon: Icon(
                                       Icons.camera_alt,
                                       color: Color.fromRGBO(112, 112, 112, 1),
@@ -305,180 +309,141 @@ class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
                                       }
                                     },
                                   ),
-                          ],
-                        ),
-                        preImgUrl.isNotEmpty
-                            ? GridView(
-                                shrinkWrap: true,
-                                physics: NeverScrollableScrollPhysics(),
-                                gridDelegate:
-                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 3,
-                                  childAspectRatio: 1,
-                                  crossAxisSpacing: 5,
-                                  mainAxisSpacing: 5,
-                                ),
-                                children: List.generate(
-                                  preImgUrl.length,
-                                  (index) {
-                                    return Container(
-                                      child: Image.memory(
-                                        Base64Decoder()
-                                            .convert(preImgUrl[index]),
-                                        fit: BoxFit.cover,
-                                        height: 300,
-                                        width: 300,
+                                ],
+                              ),
+                              preImgs.isEmpty
+                                  ? Container()
+                                  : GridView(
+                                      shrinkWrap: true,
+                                      physics: NeverScrollableScrollPhysics(),
+                                      gridDelegate:
+                                          SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 3,
+                                        childAspectRatio: 1,
+                                        crossAxisSpacing: 5,
+                                        mainAxisSpacing: 5,
                                       ),
-                                    );
-                                  },
-                                ),
-                              )
-                            : preImgs.isEmpty
-                                ? Container()
-                                : GridView(
-                                    shrinkWrap: true,
-                                    physics: NeverScrollableScrollPhysics(),
-                                    gridDelegate:
-                                        SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 3,
-                                      childAspectRatio: 1,
-                                      crossAxisSpacing: 5,
-                                      mainAxisSpacing: 5,
+                                      children: List.generate(
+                                        preImgs.length,
+                                        (index) {
+                                          return Container(
+                                            child: Image.file(
+                                              preImgs[index],
+                                              fit: BoxFit.cover,
+                                              height: 300,
+                                              width: 300,
+                                            ),
+                                          );
+                                        },
+                                      ),
                                     ),
-                                    children: List.generate(
-                                      preImgs.length,
-                                      (index) {
-                                        return Container(
-                                          child: Image.file(
-                                            preImgs[index],
-                                            fit: BoxFit.cover,
-                                            height: 300,
-                                            width: 300,
-                                          ),
-                                        );
-                                      },
+                              SizedBox(height: 10),
+                              Container(
+                                width: double.infinity,
+                                height: 40,
+                                color: Color.fromRGBO(240, 240, 240, 1),
+                                padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text(
+                                      'Odometer:',
+                                      style: GoogleFonts.cantataOne(
+                                        color: Color.fromRGBO(112, 112, 112, 1),
+                                      ),
+                                    ),
+                                    SizedBox(width: 15),
+                                    isPreOdometerSet
+                                        ? Expanded(
+                                            child: TextField(
+                                              controller: preOdometer,
+                                              keyboardType:
+                                                  TextInputType.number,
+                                            ),
+                                          )
+                                        : FlatButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                isPreOdometerSet = true;
+                                              });
+                                            },
+                                            child: Text(
+                                              'Add',
+                                              style: TextStyle(
+                                                  color: Colors.deepOrange),
+                                            ),
+                                          )
+                                  ],
+                                ),
+                              ),
+                              SizedBox(height: 10),
+                              Container(
+                                width: double.infinity,
+                                height: 40,
+                                color: Color.fromRGBO(240, 240, 240, 1),
+                                padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text(
+                                      'Fuel Level:',
+                                      style: GoogleFonts.cantataOne(
+                                        color: Color.fromRGBO(112, 112, 112, 1),
+                                      ),
+                                    ),
+                                    SizedBox(width: 15),
+                                    isPreFuelSet
+                                        ? Slider(
+                                            value: prerating,
+                                            onChanged: (newRating) {
+                                              setState(() {
+                                                prerating = newRating;
+                                              });
+                                            },
+                                            divisions: 10,
+                                            label: '$prerating',
+                                            min: 0,
+                                            max: 10,
+                                          )
+                                        : FlatButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                isPreFuelSet = true;
+                                              });
+                                            },
+                                            child: Text(
+                                              'Add',
+                                              style: TextStyle(
+                                                  color: Colors.deepOrange),
+                                            ),
+                                          )
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      : Container(),
+                  status == '7'
+                      ? Container(
+                          width: double.infinity,
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 38, vertical: 0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Text(
+                                    'Pre Delivery Inspection',
+                                    style: GoogleFonts.montserrat(
+                                      fontSize: 18,
+                                      color: Color.fromRGBO(112, 112, 112, 1),
                                     ),
                                   ),
-                        SizedBox(height: 10),
-                        Container(
-                          width: double.infinity,
-                          height: 40,
-                          color: Color.fromRGBO(240, 240, 240, 1),
-                          padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                'Odometer:',
-                                style: GoogleFonts.cantataOne(
-                                  color: Color.fromRGBO(112, 112, 112, 1),
-                                ),
-                              ),
-                              SizedBox(width: 15),
-                              getPreOdometer == null
-                                  ? isPreOdometerSet
-                                      ? Expanded(
-                                          child: TextField(
-                                            controller: preOdometer,
-                                            keyboardType: TextInputType.number,
-                                          ),
-                                        )
-                                      : FlatButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              isPreOdometerSet = true;
-                                            });
-                                          },
-                                          child: Text(
-                                            'Add',
-                                            style: TextStyle(
-                                                color: Colors.deepOrange),
-                                          ),
-                                        )
-                                  : Text(
-                                      getPreOdometer,
-                                      style: GoogleFonts.cantataOne(
-                                        color: Color.fromRGBO(112, 112, 112, 1),
-                                      ),
-                                    ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 10),
-                        Container(
-                          width: double.infinity,
-                          height: 40,
-                          color: Color.fromRGBO(240, 240, 240, 1),
-                          padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                'Fuel Level:',
-                                style: GoogleFonts.cantataOne(
-                                  color: Color.fromRGBO(112, 112, 112, 1),
-                                ),
-                              ),
-                              SizedBox(width: 15),
-                              getPreFuel == null
-                                  ? isPreFuelSet
-                                      ? Slider(
-                                          value: prerating,
-                                          onChanged: (newRating) {
-                                            setState(() {
-                                              prerating = newRating;
-                                            });
-                                          },
-                                          divisions: 10,
-                                          label: '$prerating',
-                                          min: 0,
-                                          max: 10,
-                                        )
-                                      : FlatButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              isPreFuelSet = true;
-                                            });
-                                          },
-                                          child: Text(
-                                            'Add',
-                                            style: TextStyle(
-                                                color: Colors.deepOrange),
-                                          ),
-                                        )
-                                  : Text(
-                                      getPreFuel,
-                                      style: GoogleFonts.cantataOne(
-                                        color: Color.fromRGBO(112, 112, 112, 1),
-                                      ),
-                                    ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.symmetric(horizontal: 38, vertical: 0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Text(
-                              'Pre Delivery Inspection',
-                              style: GoogleFonts.montserrat(
-                                fontSize: 18,
-                                color: Color.fromRGBO(112, 112, 112, 1),
-                              ),
-                            ),
-                            Provider.of<DeliveryOrders>(context, listen: false)
-                                    .postImages
-                                    .isNotEmpty
-                                ? Container()
-                                : IconButton(
+                                  IconButton(
                                     icon: Icon(
                                       Icons.camera_alt,
                                       color: Color.fromRGBO(112, 112, 112, 1),
@@ -550,157 +515,119 @@ class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
                                       }
                                     },
                                   ),
-                          ],
-                        ),
-                        postImgUrl.isNotEmpty
-                            ? GridView(
-                                shrinkWrap: true,
-                                physics: NeverScrollableScrollPhysics(),
-                                gridDelegate:
-                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 3,
-                                  childAspectRatio: 1,
-                                  crossAxisSpacing: 5,
-                                  mainAxisSpacing: 5,
-                                ),
-                                children: List.generate(
-                                  postImgUrl.length,
-                                  (index) {
-                                    return Container(
-                                      child: Image.memory(
-                                        Base64Decoder()
-                                            .convert(postImgUrl[index]),
-                                        fit: BoxFit.cover,
-                                        height: 300,
-                                        width: 300,
-                                      ),
-                                    );
-                                  },
-                                ),
-                              )
-                            : postImgs.isEmpty
-                                ? Container()
-                                : GridView(
-                                    shrinkWrap: true,
-                                    physics: NeverScrollableScrollPhysics(),
-                                    gridDelegate:
-                                        SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 3,
-                                      childAspectRatio: 1,
-                                      crossAxisSpacing: 5,
-                                      mainAxisSpacing: 5,
-                                    ),
-                                    children: List.generate(
-                                      postImgs.length,
-                                      (index) {
-                                        return Container(
-                                          child: Image.file(
-                                            postImgs[index],
-                                            fit: BoxFit.cover,
-                                            height: 300,
-                                            width: 300,
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                        SizedBox(height: 10),
-                        Container(
-                          width: double.infinity,
-                          height: 40,
-                          color: Color.fromRGBO(240, 240, 240, 1),
-                          padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                'Odometer:',
-                                style: GoogleFonts.cantataOne(
-                                  color: Color.fromRGBO(112, 112, 112, 1),
-                                ),
+                                ],
                               ),
-                              SizedBox(width: 15),
-                              getPostOdometer == null
-                                  ? isPostOdometerSet
-                                      ? Expanded(
-                                          child: TextField(
-                                            controller: postOdometer,
-                                            keyboardType: TextInputType.number,
-                                          ),
-                                        )
-                                      : FlatButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              isPostOdometerSet = true;
-                                            });
-                                          },
-                                          child: Text(
-                                            'Add',
-                                            style: TextStyle(
-                                                color: Colors.deepOrange),
-                                          ),
-                                        )
-                                  : Text(
-                                      getPostOdometer,
+                              postImgs.isEmpty
+                                  ? Container()
+                                  : GridView(
+                                      shrinkWrap: true,
+                                      physics: NeverScrollableScrollPhysics(),
+                                      gridDelegate:
+                                          SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 3,
+                                        childAspectRatio: 1,
+                                        crossAxisSpacing: 5,
+                                        mainAxisSpacing: 5,
+                                      ),
+                                      children: List.generate(
+                                        postImgs.length,
+                                        (index) {
+                                          return Container(
+                                            child: Image.file(
+                                              postImgs[index],
+                                              fit: BoxFit.cover,
+                                              height: 300,
+                                              width: 300,
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                              SizedBox(height: 10),
+                              Container(
+                                width: double.infinity,
+                                height: 40,
+                                color: Color.fromRGBO(240, 240, 240, 1),
+                                padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text(
+                                      'Odometer:',
                                       style: GoogleFonts.cantataOne(
                                         color: Color.fromRGBO(112, 112, 112, 1),
                                       ),
                                     ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 10),
-                        Container(
-                          width: double.infinity,
-                          height: 40,
-                          color: Color.fromRGBO(240, 240, 240, 1),
-                          padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                'Fuel Level:',
-                                style: GoogleFonts.cantataOne(
-                                  color: Color.fromRGBO(112, 112, 112, 1),
+                                    SizedBox(width: 15),
+                                    isPostOdometerSet
+                                        ? Expanded(
+                                            child: TextField(
+                                              controller: postOdometer,
+                                              keyboardType:
+                                                  TextInputType.number,
+                                            ),
+                                          )
+                                        : FlatButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                isPostOdometerSet = true;
+                                              });
+                                            },
+                                            child: Text(
+                                              'Add',
+                                              style: TextStyle(
+                                                  color: Colors.deepOrange),
+                                            ),
+                                          )
+                                  ],
                                 ),
                               ),
-                              SizedBox(width: 15),
-                              getPostFuel == null
-                                  ? isPostFuelSet
-                                      ? Slider(
-                                          value: postrating,
-                                          onChanged: (newRating) {
-                                            setState(() {
-                                              postrating = newRating;
-                                            });
-                                          },
-                                          label: '$postrating',
-                                        )
-                                      : FlatButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              isPostFuelSet = true;
-                                            });
-                                          },
-                                          child: Text(
-                                            'Add',
-                                            style: TextStyle(
-                                                color: Colors.deepOrange),
-                                          ),
-                                        )
-                                  : Text(
-                                      getPostFuel,
+                              SizedBox(height: 10),
+                              Container(
+                                width: double.infinity,
+                                height: 40,
+                                color: Color.fromRGBO(240, 240, 240, 1),
+                                padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text(
+                                      'Fuel Level:',
                                       style: GoogleFonts.cantataOne(
                                         color: Color.fromRGBO(112, 112, 112, 1),
                                       ),
                                     ),
+                                    SizedBox(width: 15),
+                                    isPostFuelSet
+                                        ? Slider(
+                                            value: postrating,
+                                            onChanged: (newRating) {
+                                              setState(() {
+                                                postrating = newRating;
+                                              });
+                                            },
+                                            label: '$postrating',
+                                          )
+                                        : FlatButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                isPostFuelSet = true;
+                                              });
+                                            },
+                                            child: Text(
+                                              'Add',
+                                              style: TextStyle(
+                                                  color: Colors.deepOrange),
+                                            ),
+                                          )
+                                  ],
+                                ),
+                              ),
+                              SizedBox(height: 10),
                             ],
                           ),
-                        ),
-                        SizedBox(height: 10),
-                      ],
-                    ),
-                  ),
+                        )
+                      : Container(),
                 ],
               ),
             ),

@@ -14,11 +14,13 @@ class MenuScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var ssName =
+        Provider.of<ServiceStation>(context, listen: false).item1.ssName;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          'Service Station Name',
+          ssName,
           style: TextStyle(
             color: Colors.deepOrange,
             fontSize: 24,

@@ -52,8 +52,8 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
 
   void _dropBikeToSS(String bookingId) async {
     try {
-      await Provider.of<DeliveryOrders>(context, listen: false)
-          .incrementstatus(bookingId, '3');
+      await Provider.of<DeliveryOrders>(context, listen: false).incrementstatus(
+          bookingId, '3', 'Bike cannot be dropped to SS right now');
       showDialog(
         context: context,
         builder: (ctx) {
@@ -93,8 +93,8 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
 
   void _bikePickedFromSS(String bookingId) async {
     try {
-      await Provider.of<DeliveryOrders>(context, listen: false)
-          .incrementstatus(bookingId, '6');
+      await Provider.of<DeliveryOrders>(context, listen: false).incrementstatus(
+          bookingId, '6', 'Bike cannot be picked from SS right now');
       showDialog(
         context: context,
         builder: (ctx) {
@@ -194,6 +194,7 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
         ModalRoute.of(context).settings.arguments as DeliveryOrderItem;
     var otp = order.otp;
     var deliveryOtp = order.deliveryOtp;
+    // var deliveryOtp = '1234';
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -224,17 +225,34 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
-                  Text(
-                    order.customer,
-                    style: GoogleFonts.montserrat(
-                      color: Colors.deepOrange,
-                      fontSize: 18,
+                  Expanded(
+                    flex: 1,
+                    child: Text(
+                      order.customer,
+                      style: GoogleFonts.montserrat(
+                        color: Colors.deepOrange,
+                        fontSize: 18,
+                      ),
                     ),
                   ),
-                  Text(
-                    '${order.make} ${order.model}',
-                    style: GoogleFonts.montserrat(
-                      fontSize: 18,
+                  Expanded(
+                    flex: 1,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          '${order.make}',
+                          style: GoogleFonts.montserrat(
+                            fontSize: 10,
+                          ),
+                        ),
+                        Text(
+                          '${order.model}',
+                          style: GoogleFonts.montserrat(
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],

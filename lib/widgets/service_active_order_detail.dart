@@ -31,176 +31,245 @@ class ServiceActiveOrderDetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final order = Provider.of<ServiceOrderItem>(context, listen: false);
-    return Container(
-      width: double.infinity,
-      height: order.landmark != '' ? 260 : 245,
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: Colors.deepOrange,
-          width: 1,
-        ),
-      ),
-      padding: EdgeInsets.all(8),
-      child: Row(
-        children: <Widget>[
-          Expanded(
-            flex: 10,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: Text(
-                    order.customer,
-                    style: GoogleFonts.montserrat(
-                      color: Color.fromRGBO(241, 93, 36, 1),
-                      fontSize: 20,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-                Container(
-                  width: double.infinity,
-                  child: RichText(
-                    text: TextSpan(
-                      children: <TextSpan>[
-                        TextSpan(
-                          text: 'Bike: ',
-                          style: GoogleFonts.cantataOne(
-                            color: Color.fromRGBO(128, 128, 128, 1),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                        TextSpan(
-                          text: '${order.make} ${order.model}',
-                          style: GoogleFonts.cantataOne(
-                            color: Colors.grey,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(height: 4),
-                Row(
-                  children: <Widget>[
-                    Text(
-                      'Booking ID:',
-                      style: GoogleFonts.cantataOne(
-                        color: Color.fromRGBO(128, 128, 128, 1),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(width: 8),
-                    Text(
-                      order.bookingId,
-                      style: GoogleFonts.cantataOne(
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 4),
-                Row(
-                  children: <Widget>[
-                    Text(
-                      'Pickup Date:',
-                      style: GoogleFonts.cantataOne(
-                        color: Color.fromRGBO(128, 128, 128, 1),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(width: 8),
-                    Text(
-                      order.date,
-                      style: GoogleFonts.cantataOne(
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 4),
-                Row(
-                  children: <Widget>[
-                    Text(
-                      'Pickup Time:',
-                      style: GoogleFonts.cantataOne(
-                        color: Color.fromRGBO(128, 128, 128, 1),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(width: 8),
-                    Text(
-                      order.time,
-                      style: GoogleFonts.cantataOne(
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 4),
-                Container(
-                  width: double.infinity,
-                  child: RichText(
-                    text: TextSpan(
-                      children: <TextSpan>[
-                        TextSpan(
-                          text: 'PickupAddress: ',
-                          style: GoogleFonts.cantataOne(
-                            color: Color.fromRGBO(128, 128, 128, 1),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                        TextSpan(
-                          text: '${order.flat}, ${order.address}',
-                          style: GoogleFonts.cantataOne(
-                            color: Colors.grey,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10),
+      child: InkWell(
+        onTap: () {
+          Navigator.of(context)
+              .pushNamed(OrderMenuScreen.routeName, arguments: order);
+        },
+        child: Card(
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Container(
+            width: double.infinity,
+            height: order.landmark != '' ? 250 : 235,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                BoxShadow(
+                  color: Color.fromRGBO(0, 0, 0, 0.15),
+                  offset: Offset(0.0, 5.0), //(x,y)
+                  blurRadius: 7.0,
                 ),
               ],
             ),
-          ),
-          Expanded(
-            flex: 2,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
-                IconButton(
-                  icon: Icon(Icons.arrow_forward),
-                  onPressed: () {
-                    Navigator.of(context)
-                        .pushNamed(OrderMenuScreen.routeName, arguments: order);
-                  },
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text(
-                      'Status:',
-                      style: TextStyle(color: Colors.grey),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        left: 8,
+                        bottom: 0,
+                        top: 16,
+                        right: 0,
+                      ),
+                      child: Text(
+                        '${order.customer}',
+                        style: TextStyle(
+                          fontFamily: 'Montserrat',
+                          color: Theme.of(context).primaryColor,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     ),
-                    Text(
-                      _getStatus(order),
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
+                    Container(
+                      width: 55,
+                      padding: EdgeInsets.symmetric(horizontal: 2, vertical: 4),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(10),
+                          bottomLeft: Radius.circular(10),
+                        ),
                         color: Theme.of(context).primaryColor,
                       ),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Text(
+                          'Active',
+                          style: TextStyle(
+                            fontFamily: 'SourceSansProSB',
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 8),
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      flex: 14,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Container(
+                              width: double.infinity,
+                              child: RichText(
+                                text: TextSpan(
+                                  children: <TextSpan>[
+                                    TextSpan(
+                                      text: 'Bike: ',
+                                      style: GoogleFonts.cantataOne(
+                                        color: Color.fromRGBO(128, 128, 128, 1),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: '${order.make} ${order.model}',
+                                      style: GoogleFonts.cantataOne(
+                                        color: Colors.grey,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 4),
+                            Row(
+                              children: <Widget>[
+                                Text(
+                                  'Booking ID:',
+                                  style: GoogleFonts.cantataOne(
+                                    color: Color.fromRGBO(128, 128, 128, 1),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                                SizedBox(width: 8),
+                                Text(
+                                  order.bookingId,
+                                  style: GoogleFonts.cantataOne(
+                                    color: Colors.grey,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                                Spacer(),
+                                RichText(
+                                  text: TextSpan(
+                                    children: <TextSpan>[
+                                      TextSpan(
+                                        text: 'Status: ',
+                                        style: TextStyle(
+                                          fontFamily: 'SourceSansPro',
+                                          color:
+                                              Color.fromRGBO(128, 128, 128, 1),
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text: _getStatus(order),
+                                        style: TextStyle(
+                                          fontFamily: 'SourceSansPro',
+                                          color: Theme.of(context).primaryColor,
+                                          fontSize: 15,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 4),
+                            Row(
+                              children: <Widget>[
+                                Text(
+                                  'Pickup Date:',
+                                  style: GoogleFonts.cantataOne(
+                                    color: Color.fromRGBO(128, 128, 128, 1),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                                SizedBox(width: 8),
+                                Text(
+                                  order.date,
+                                  style: GoogleFonts.cantataOne(
+                                    color: Colors.grey,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 4),
+                            Row(
+                              children: <Widget>[
+                                Text(
+                                  'Pickup Time:',
+                                  style: GoogleFonts.cantataOne(
+                                    color: Color.fromRGBO(128, 128, 128, 1),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                                SizedBox(width: 8),
+                                Text(
+                                  order.time,
+                                  style: GoogleFonts.cantataOne(
+                                    color: Colors.grey,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 4),
+                            Container(
+                              width: double.infinity,
+                              child: RichText(
+                                text: TextSpan(
+                                  children: <TextSpan>[
+                                    TextSpan(
+                                      text: 'PickupAddress: ',
+                                      style: GoogleFonts.cantataOne(
+                                        color: Color.fromRGBO(128, 128, 128, 1),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: '${order.flat}, ${order.address}',
+                                      style: GoogleFonts.cantataOne(
+                                        color: Colors.grey,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: Icon(
+                        Icons.arrow_forward_ios,
+                        size: 20,
+                        color: Color.fromRGBO(112, 112, 112, 1),
+                      ),
                     ),
                   ],
                 ),
               ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }

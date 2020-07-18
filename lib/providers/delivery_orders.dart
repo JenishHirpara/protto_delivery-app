@@ -165,7 +165,8 @@ class DeliveryOrders with ChangeNotifier {
     }
   }
 
-  Future<void> incrementstatus(String bookingId, String status) async {
+  Future<void> incrementstatus(
+      String bookingId, String status, String message) async {
     final url = 'http://stage.protto.in/api/shivangi/bookingstatus.php';
     final response = await http.patch(url,
         body: json.encode({
@@ -174,20 +175,16 @@ class DeliveryOrders with ChangeNotifier {
         }));
     final extractedData = json.decode(response.body) as Map<String, dynamic>;
     if (extractedData['message'] == 'status not incremented') {
-      if (status == '1') {
-        throw HttpException('Pre Inspection Images cannot be uploaded now');
-      } else if (status == '2') {
-        throw HttpException('Bike cannot picked up from customer right now');
-      } else if (status == '3') {
-        throw HttpException(
-            "Bike cannot be dropped to service station right now");
-      } else if (status == '7') {
-        throw HttpException(
-            "Bike cannot be picked from service station right now");
-      } else if (status == '8') {
-        throw HttpException("Bike cannot be dropped to customer right now");
-      }
+      throw HttpException(message);
     }
+  }
+
+  Future<String> fetchBooking(String bookingId) async {
+    final url =
+        'http://stage.protto.in/api/shivangi/fetchbooking.php?booking_id=$bookingId';
+    final response = await http.get(url);
+    final extractedData = json.decode(response.body) as Map<String, dynamic>;
+    return extractedData['data']['status'];
   }
 
   Future<void> getpreimages(String bookingId) async {

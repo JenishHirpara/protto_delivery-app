@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import './delivery_info_screen.dart';
 import './inspection_images_screen.dart';
+import './display_inspection_images_screen.dart';
 import '../../providers/delivery_orders.dart';
 
 class MenuScreen extends StatelessWidget {
@@ -46,50 +47,154 @@ class MenuScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+            GridView(
+              shrinkWrap: true,
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              physics: NeverScrollableScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                //childAspectRatio: 9 / 10,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+              ),
               children: <Widget>[
-                Column(
-                  children: <Widget>[
-                    GestureDetector(
-                      child: Container(
-                        height: 100,
-                        width: MediaQuery.of(context).size.width * 0.3,
-                        color: Color.fromRGBO(100, 100, 100, 1),
-                      ),
-                      onTap: () {
-                        Navigator.of(context).pushNamed(
-                            DeliveryInfoScreen.routeName,
-                            arguments: order);
-                      },
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    SizedBox(height: 10),
-                    Text(
-                      'Delivery Info',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: <Widget>[
-                    GestureDetector(
-                      child: Container(
-                        height: 100,
-                        width: MediaQuery.of(context).size.width * 0.3,
-                        color: Color.fromRGBO(100, 100, 100, 1),
-                      ),
+                    elevation: 2,
+                    child: InkWell(
                       onTap: () {
                         Navigator.of(context).pushNamed(
                             InspectionImagesScreen.routeName,
                             arguments: order);
                       },
+                      child: Container(
+                        height: 120,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color.fromRGBO(0, 0, 0, 0.15),
+                              offset: Offset(0.0, 5.0), //(x,y)
+                              blurRadius: 7.0,
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          children: <Widget>[
+                            SizedBox(height: 10),
+                            Container(
+                              height: 100,
+                              width: MediaQuery.of(context).size.width * 0.3,
+                              child: Image.asset('assets/images/1.png'),
+                            ),
+                            SizedBox(height: 10),
+                            Text(
+                              'Click Inspection Images',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                    SizedBox(height: 10),
-                    Text(
-                      'Inspection Details',
-                      style: TextStyle(fontSize: 16),
+                  ),
+                ),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                  ],
+                    elevation: 2,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.of(context).pushNamed(
+                            DeliveryInfoScreen.routeName,
+                            arguments: order);
+                      },
+                      child: Container(
+                        height: 120,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color.fromRGBO(0, 0, 0, 0.15),
+                              offset: Offset(0.0, 5.0), //(x,y)
+                              blurRadius: 7.0,
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          children: <Widget>[
+                            SizedBox(height: 10),
+                            Container(
+                              height: 100,
+                              width: MediaQuery.of(context).size.width * 0.3,
+                              child: Image.asset('assets/images/2.png'),
+                            ),
+                            SizedBox(height: 10),
+                            Text(
+                              'Delivery Info',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    elevation: 2,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.of(context).pushNamed(
+                            DisplayInspectionImagesScreen.routeName,
+                            arguments: order);
+                      },
+                      child: Container(
+                        height: 120,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color.fromRGBO(0, 0, 0, 0.15),
+                              offset: Offset(0.0, 5.0), //(x,y)
+                              blurRadius: 7.0,
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          children: <Widget>[
+                            SizedBox(height: 10),
+                            Container(
+                              height: 100,
+                              width: MediaQuery.of(context).size.width * 0.3,
+                              child: Image.asset('assets/images/2.png'),
+                            ),
+                            SizedBox(height: 10),
+                            Text(
+                              'Display Inspection Images',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),

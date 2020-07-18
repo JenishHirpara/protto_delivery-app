@@ -24,7 +24,8 @@ class OrderMenuScreen extends StatelessWidget {
                 Navigator.of(ctx).pop();
                 try {
                   await Provider.of<ServiceOrders>(context, listen: false)
-                      .incrementstatus(bookingId, '5');
+                      .incrementstatus(bookingId, '5',
+                          'Service cannot be completed right now');
                   showDialog(
                     context: context,
                     builder: (ctx) {
@@ -148,9 +149,13 @@ class OrderMenuScreen extends StatelessWidget {
               ),
             ),
             Container(
-              padding: EdgeInsets.all(40),
+              margin: EdgeInsets.symmetric(
+                vertical: 40,
+                horizontal: 20,
+              ),
               width: double.infinity,
-              //height: 50,
+              height: 50,
+              color: Colors.deepOrange,
               child: RaisedButton(
                 color: Colors.deepOrange,
                 onPressed: () => _serviceDone(context, order.bookingId),
