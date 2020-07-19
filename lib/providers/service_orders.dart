@@ -308,7 +308,8 @@ class ServiceOrders with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> incrementstatus(String bookingId, String status) async {
+  Future<void> incrementstatus(
+      String bookingId, String status, String message) async {
     final url = 'http://stage.protto.in/api/shivangi/bookingstatus.php';
     final response = await http.patch(url,
         body: json.encode({
@@ -317,9 +318,7 @@ class ServiceOrders with ChangeNotifier {
         }));
     final extractedData = json.decode(response.body) as Map<String, dynamic>;
     if (extractedData['message'] == 'status not incremented') {
-      if (status == '5') {
-        throw HttpException('Service cannot be completed right now');
-      }
+      throw HttpException(message);
     }
   }
 

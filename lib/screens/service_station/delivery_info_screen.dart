@@ -134,17 +134,34 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[
-                        Text(
-                          order.customer,
-                          style: GoogleFonts.montserrat(
-                            color: Colors.deepOrange,
-                            fontSize: 18,
+                        Expanded(
+                          flex: 1,
+                          child: Text(
+                            order.customer,
+                            style: GoogleFonts.montserrat(
+                              color: Colors.deepOrange,
+                              fontSize: 18,
+                            ),
                           ),
                         ),
-                        Text(
-                          '${order.make} ${order.model}',
-                          style: GoogleFonts.montserrat(
-                            fontSize: 18,
+                        Expanded(
+                          flex: 1,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                '${order.make}',
+                                style: GoogleFonts.montserrat(
+                                  fontSize: 10,
+                                ),
+                              ),
+                              Text(
+                                '${order.model}',
+                                style: GoogleFonts.montserrat(
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
@@ -326,7 +343,7 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
                               ),
                             ],
                           ),
-                          SizedBox(height: 20),
+                          SizedBox(height: 4),
                           Row(
                             children: <Widget>[
                               Text(

@@ -11,6 +11,7 @@ import './screens/delivery_executive/bookings_screen.dart';
 import './screens/delivery_executive/menu_screen.dart';
 import './screens/delivery_executive/delivery_info_screen.dart';
 import './screens/delivery_executive/inspection_images_screen.dart';
+import './screens/delivery_executive/display_inspection_images_screen.dart';
 import './screens/service_station/login_screen.dart' as Login;
 import './screens/service_station/menu_screen.dart' as Menu;
 import './screens/service_station/order_menu_screen.dart';
@@ -47,6 +48,8 @@ class _MyAppState extends State<MyApp> {
     MenuScreen.routeName: (ctx) => MenuScreen(),
     DeliveryInfoScreen.routeName: (ctx) => DeliveryInfoScreen(),
     InspectionImagesScreen.routeName: (ctx) => InspectionImagesScreen(),
+    DisplayInspectionImagesScreen.routeName: (ctx) =>
+        DisplayInspectionImagesScreen(),
     Login.LoginScreen.routeName: (ctx) => Login.LoginScreen(),
     Menu.MenuScreen.routeName: (ctx) => Menu.MenuScreen(),
     OrderMenuScreen.routeName: (ctx) => OrderMenuScreen(),
