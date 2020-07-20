@@ -194,7 +194,6 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
         ModalRoute.of(context).settings.arguments as DeliveryOrderItem;
     var otp = order.otp;
     var deliveryOtp = order.deliveryOtp;
-    // var deliveryOtp = '1234';
     return Scaffold(
       appBar: AppBar(
         title: Text(
