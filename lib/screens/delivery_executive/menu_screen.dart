@@ -182,7 +182,7 @@ class MenuScreen extends StatelessWidget {
                             Container(
                               height: 100,
                               width: MediaQuery.of(context).size.width * 0.3,
-                              child: Image.asset('assets/images/2.png'),
+                              child: Image.asset('assets/images/3.png'),
                             ),
                             SizedBox(height: 10),
                             Text(
