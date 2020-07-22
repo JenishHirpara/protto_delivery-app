@@ -26,6 +26,8 @@ class DeliveryOrderItem with ChangeNotifier {
   final String deliveryType;
   final String otp;
   final String deliveryOtp;
+  final String total;
+  final String paid;
 
   DeliveryOrderItem({
     @required this.id,
@@ -49,6 +51,8 @@ class DeliveryOrderItem with ChangeNotifier {
     @required this.bikeNumber,
     @required this.bikeYear,
     @required this.status,
+    @required this.total,
+    @required this.paid,
   });
 }
 
@@ -62,12 +66,22 @@ class DeliveryOrders with ChangeNotifier {
   String _postOdometerReading;
   String _preFuelLevel;
   String _postFuelLevel;
+  String _currentTotal;
+  String _currentPaid;
   final String userId;
 
   DeliveryOrders(this.userId, this._items);
 
   List<DeliveryOrderItem> get items {
     return [..._items];
+  }
+
+  String get currentTotal {
+    return _currentTotal;
+  }
+
+  String get currentPaid {
+    return _currentPaid;
   }
 
   String get preOdometerReading {
@@ -134,6 +148,8 @@ class DeliveryOrders with ChangeNotifier {
           bikeid: extractedData1['data'][i]['bike_id'],
           deliveryType: extractedData1['data'][i]['delivery_type'],
           customer: extractedData1['data'][i]['cust_name'],
+          total: extractedData1['data'][i]['total'],
+          paid: extractedData1['data'][i]['paid'],
           bikeNumber: extractedData2['data']['bike_reg'],
           bikeYear: extractedData2['data']['year'],
           make: extractedData2['data']['make'],
@@ -184,6 +200,9 @@ class DeliveryOrders with ChangeNotifier {
         'http://stage.protto.in/api/shivangi/fetchbooking.php?booking_id=$bookingId';
     final response = await http.get(url);
     final extractedData = json.decode(response.body) as Map<String, dynamic>;
+    _currentTotal = extractedData['data']['total'];
+    _currentPaid = extractedData['data']['paid'];
+    notifyListeners();
     return extractedData['data']['status'];
   }
 
@@ -276,6 +295,23 @@ class DeliveryOrders with ChangeNotifier {
           'odometer_reading': postOdometer,
           'fuel_level': postrating,
         }));
+  }
+
+  Future<String> paymentreceived(String bookingId) async {
+    const url = 'http://stage.protto.in/api/shivangi/paymentreceived.php';
+    final response = await http.patch(url,
+        body: json.encode({
+          'booking_id': bookingId,
+          'status': '8',
+        }));
+    final extractedData = json.decode(response.body) as Map<String, dynamic>;
+    if (extractedData['message'] == 'payment approved') {
+      _currentPaid = _currentTotal;
+      notifyListeners();
+      return extractedData['message'];
+    } else {
+      return extractedData['message'];
+    }
   }
 
   void logout() {

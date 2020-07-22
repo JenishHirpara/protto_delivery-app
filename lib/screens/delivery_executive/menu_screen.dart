@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import './delivery_info_screen.dart';
 import './inspection_images_screen.dart';
 import './display_inspection_images_screen.dart';
+import './payments_screen.dart';
 import '../../providers/delivery_orders.dart';
 
 class MenuScreen extends StatelessWidget {
@@ -187,6 +188,52 @@ class MenuScreen extends StatelessWidget {
                             SizedBox(height: 10),
                             Text(
                               'Display Inspection Images',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    elevation: 2,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.of(context).pushNamed(
+                            PaymentsScreen.routeName,
+                            arguments: order);
+                      },
+                      child: Container(
+                        height: 120,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color.fromRGBO(0, 0, 0, 0.15),
+                              offset: Offset(0.0, 5.0), //(x,y)
+                              blurRadius: 7.0,
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          children: <Widget>[
+                            SizedBox(height: 10),
+                            Container(
+                              height: 100,
+                              width: MediaQuery.of(context).size.width * 0.3,
+                              child: Image.asset('assets/images/4.png'),
+                            ),
+                            SizedBox(height: 10),
+                            Text(
+                              'Payments',
                               textAlign: TextAlign.center,
                               style: TextStyle(fontSize: 16),
                             ),

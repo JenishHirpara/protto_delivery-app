@@ -45,7 +45,7 @@ class ServiceActiveOrderDetail extends StatelessWidget {
           ),
           child: Container(
             width: double.infinity,
-            height: order.landmark != '' ? 250 : 235,
+            height: order.landmark != '' ? 265 : 245,
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(10),
@@ -115,6 +115,29 @@ class ServiceActiveOrderDetail extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
+                            Row(
+                              children: <Widget>[
+                                Text(
+                                  'Status:',
+                                  style: TextStyle(
+                                    fontFamily: 'SourceSansPro',
+                                    color: Color.fromRGBO(128, 128, 128, 1),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                SizedBox(width: 8),
+                                Text(
+                                  _getStatus(order),
+                                  style: TextStyle(
+                                    fontFamily: 'SourceSansPro',
+                                    color: Theme.of(context).primaryColor,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 4),
                             Container(
                               width: double.infinity,
                               child: RichText(
@@ -156,31 +179,6 @@ class ServiceActiveOrderDetail extends StatelessWidget {
                                   style: GoogleFonts.cantataOne(
                                     color: Colors.grey,
                                     fontSize: 12,
-                                  ),
-                                ),
-                                Spacer(),
-                                RichText(
-                                  text: TextSpan(
-                                    children: <TextSpan>[
-                                      TextSpan(
-                                        text: 'Status: ',
-                                        style: TextStyle(
-                                          fontFamily: 'SourceSansPro',
-                                          color:
-                                              Color.fromRGBO(128, 128, 128, 1),
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
-                                        ),
-                                      ),
-                                      TextSpan(
-                                        text: _getStatus(order),
-                                        style: TextStyle(
-                                          fontFamily: 'SourceSansPro',
-                                          color: Theme.of(context).primaryColor,
-                                          fontSize: 15,
-                                        ),
-                                      ),
-                                    ],
                                   ),
                                 ),
                               ],
@@ -242,7 +240,9 @@ class ServiceActiveOrderDetail extends StatelessWidget {
                                       ),
                                     ),
                                     TextSpan(
-                                      text: '${order.flat}, ${order.address}',
+                                      text: order.landmark != ''
+                                          ? '${order.flat}, ${order.landmark}, ${order.address}'
+                                          : '${order.flat}, ${order.address}',
                                       style: GoogleFonts.cantataOne(
                                         color: Colors.grey,
                                         fontSize: 14,
