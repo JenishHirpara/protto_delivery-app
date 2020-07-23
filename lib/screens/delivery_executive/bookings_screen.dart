@@ -17,6 +17,12 @@ class _BookingsScreenState extends State<BookingsScreen> {
   var _isInit = true;
   var _isLoading = true;
 
+  Future<void> _refreshPage() async {
+    await Provider.of<DeliveryOrders>(context, listen: false)
+        .fetchAndSetOrders();
+    setState(() {});
+  }
+
   @override
   void didChangeDependencies() async {
     if (_isInit) {
@@ -86,37 +92,41 @@ class _BookingsScreenState extends State<BookingsScreen> {
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              child: Container(
-                width: double.infinity,
-                margin: EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      '  Active',
-                      style: TextStyle(
-                        color: Theme.of(context).primaryColor,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Container(
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        itemBuilder: (ctx, i) => Column(
-                          children: <Widget>[
-                            ChangeNotifierProvider.value(
-                              value: orders[i],
-                              child: DeliveryActiveOrderDetail(),
-                            ),
-                            SizedBox(height: 15),
-                          ],
+          : RefreshIndicator(
+              onRefresh: _refreshPage,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Container(
+                  width: double.infinity,
+                  margin: EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        '  Active',
+                        style: TextStyle(
+                          color: Theme.of(context).primaryColor,
+                          fontWeight: FontWeight.bold,
                         ),
-                        itemCount: orders.length,
                       ),
-                    ),
-                  ],
+                      Container(
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemBuilder: (ctx, i) => Column(
+                            children: <Widget>[
+                              ChangeNotifierProvider.value(
+                                value: orders[i],
+                                child: DeliveryActiveOrderDetail(),
+                              ),
+                              SizedBox(height: 15),
+                            ],
+                          ),
+                          itemCount: orders.length,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
