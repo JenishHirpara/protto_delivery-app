@@ -9,7 +9,7 @@ class ServiceActiveOrderDetail extends StatelessWidget {
   String _getStatus(ServiceOrderItem order) {
     if (order.status == '1' && order.deId == '0') {
       return 'Pending';
-    } else if (order.status == '1' || order.deId != '0') {
+    } else if (order.status == '1' && order.deId != '0') {
       return 'Service Confirmed';
     } else if (order.status == '2' || order.status == '3') {
       return 'Picked Up';
