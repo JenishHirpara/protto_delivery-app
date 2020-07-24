@@ -223,7 +223,7 @@ class ServiceOrders with ChangeNotifier {
 
   Future<void> getjobs(String bookingId) async {
     final url =
-        'http://stage.protto.in/api/shivangi/getjobs.php?booking_id=$bookingId';
+        'http://stage.protto.in/api/shivangi/getjobs.php?booking_id=$bookingId&approved=1';
     final response = await http.get(url);
     final extractedData = json.decode(response.body) as Map<String, dynamic>;
     var data = [];
