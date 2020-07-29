@@ -15,6 +15,86 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
   var _isInit = true;
   var _isLoading = true;
 
+  var total;
+  var paid;
+  var due;
+  var paymentId;
+
+  void dialog(String title, String option) {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title: Text(title),
+          actions: <Widget>[
+            FlatButton(
+              onPressed: () {
+                Navigator.of(ctx).pop();
+                if (option == '1') {
+                  Navigator.of(context).pop();
+                }
+              },
+              child: Text('Okay'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  verifyPayment(BuildContext context, DeliveryOrderItem order) async {
+    if (paymentId != null) {
+      var decision = await Provider.of<DeliveryOrders>(context, listen: false)
+          .verifyPayment(paymentId);
+      if (decision) {
+        var message = await Provider.of<DeliveryOrders>(context, listen: false)
+            .paymentreceived(order.bookingId);
+        dialog(message, '1');
+      } else {
+        dialog('Customer has not paid the amount yet', '2');
+      }
+    } else {
+      dialog('Please send payment link to customer first!', '2');
+    }
+  }
+
+  void linkDialog(BuildContext context, DeliveryOrderItem order) {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title:
+              Text('Are you sure the customer wants to pay online right now?'),
+          actions: <Widget>[
+            FlatButton(
+              onPressed: () {
+                Navigator.of(ctx).pop();
+              },
+              child: Text('No'),
+            ),
+            FlatButton(
+              onPressed: () async {
+                paymentId =
+                    await Provider.of<DeliveryOrders>(context, listen: false)
+                        .paymentLink(
+                  order.customer,
+                  order.email,
+                  order.mobile,
+                  due,
+                  order.make,
+                  order.model,
+                  order.bookingId,
+                );
+                Navigator.of(ctx).pop();
+              },
+              child: Text('Yes'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void paidDialog(BuildContext context, DeliveryOrderItem order) {
     showDialog(
       context: context,
@@ -29,24 +109,24 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                     await Provider.of<DeliveryOrders>(context, listen: false)
                         .paymentreceived(order.bookingId);
                 Navigator.of(ctx).pop();
-                if (message == 'payment approved') {
-                  showDialog(
-                    context: context,
-                    builder: (ctx2) {
-                      return AlertDialog(
-                        title: Text(message),
-                        actions: <Widget>[
-                          FlatButton(
-                            onPressed: () {
-                              Navigator.of(ctx2).pop();
-                            },
-                            child: Text('Okay'),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                }
+                // if (message == 'payment approved') {
+                //   showDialog(
+                //     context: context,
+                //     builder: (ctx2) {
+                //       return AlertDialog(
+                //         title: Text(message),
+                //         actions: <Widget>[
+                //           FlatButton(
+                //             onPressed: () {
+                //               Navigator.of(ctx2).pop();
+                //             },
+                //             child: Text('Okay'),
+                //           ),
+                //         ],
+                //       );
+                //     },
+                //   );
+                // }
                 showDialog(
                   context: context,
                   builder: (ctx2) {
@@ -56,6 +136,7 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                         FlatButton(
                           onPressed: () {
                             Navigator.of(ctx2).pop();
+                            Navigator.of(context).pop();
                           },
                           child: Text('Okay'),
                         ),
@@ -84,6 +165,9 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
       await Provider.of<DeliveryOrders>(context, listen: false).fetchBooking(
           (ModalRoute.of(context).settings.arguments as DeliveryOrderItem)
               .bookingId);
+      total = Provider.of<DeliveryOrders>(context, listen: false).currentTotal;
+      paid = Provider.of<DeliveryOrders>(context, listen: false).currentPaid;
+      due = '${double.parse(total) - double.parse(paid)}';
       setState(() {
         _isLoading = false;
       });
@@ -96,9 +180,6 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
   Widget build(BuildContext context) {
     final order =
         ModalRoute.of(context).settings.arguments as DeliveryOrderItem;
-    var total = Provider.of<DeliveryOrders>(context).currentTotal;
-    var paid = Provider.of<DeliveryOrders>(context).currentPaid;
-    var due = '${double.parse(total) - double.parse(paid)}';
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -313,30 +394,61 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                                 ),
                               ),
                               SizedBox(height: 25),
-                              Center(
-                                child: Container(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.4,
-                                  height: 45,
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: Theme.of(context).primaryColor,
-                                      width: 1.2,
-                                    ),
-                                  ),
-                                  child: RaisedButton(
-                                    color: Colors.white,
-                                    child: Text(
-                                      'Send Link',
-                                      style: TextStyle(
-                                        fontFamily: 'SourceSansProSB',
-                                        fontSize: 15,
-                                        color: Color.fromRGBO(112, 112, 112, 1),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Container(
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.4,
+                                    height: 45,
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: Theme.of(context).primaryColor,
+                                        width: 1.2,
                                       ),
                                     ),
-                                    onPressed: () {},
+                                    child: RaisedButton(
+                                      color: Colors.white,
+                                      child: Text(
+                                        'Send Link',
+                                        style: TextStyle(
+                                          fontFamily: 'SourceSansProSB',
+                                          fontSize: 15,
+                                          color:
+                                              Color.fromRGBO(112, 112, 112, 1),
+                                        ),
+                                      ),
+                                      onPressed: () =>
+                                          linkDialog(context, order),
+                                    ),
                                   ),
-                                ),
+                                  Container(
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.4,
+                                    height: 45,
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: Theme.of(context).primaryColor,
+                                        width: 1.2,
+                                      ),
+                                    ),
+                                    child: RaisedButton(
+                                      color: Colors.white,
+                                      child: Text(
+                                        'Verify Payment',
+                                        style: TextStyle(
+                                          fontFamily: 'SourceSansProSB',
+                                          fontSize: 15,
+                                          color:
+                                              Color.fromRGBO(112, 112, 112, 1),
+                                        ),
+                                      ),
+                                      onPressed: () =>
+                                          verifyPayment(context, order),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
