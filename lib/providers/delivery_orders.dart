@@ -17,6 +17,8 @@ class DeliveryOrderItem with ChangeNotifier {
   final String date;
   final String time;
   final String customer;
+  final String mobile;
+  final String email;
   final String bikeNumber;
   final String flat;
   final String address;
@@ -44,6 +46,8 @@ class DeliveryOrderItem with ChangeNotifier {
     @required this.longitude,
     @required this.deliveryType,
     @required this.customer,
+    @required this.mobile,
+    @required this.email,
     @required this.otp,
     @required this.deliveryOtp,
     @required this.make,
@@ -148,6 +152,8 @@ class DeliveryOrders with ChangeNotifier {
           bikeid: extractedData1['data'][i]['bike_id'],
           deliveryType: extractedData1['data'][i]['delivery_type'],
           customer: extractedData1['data'][i]['cust_name'],
+          mobile: extractedData1['data'][i]['mobile'],
+          email: extractedData1['data'][i]['email'],
           total: extractedData1['data'][i]['total'],
           paid: extractedData1['data'][i]['paid'],
           bikeNumber: extractedData2['data']['bike_reg'],
@@ -204,6 +210,67 @@ class DeliveryOrders with ChangeNotifier {
     _currentPaid = extractedData['data']['paid'];
     notifyListeners();
     return extractedData['data']['status'];
+  }
+
+  Future<String> paymentLink(
+    String name,
+    String email,
+    String mobile,
+    String amount,
+    String make,
+    String model,
+    String bookingId,
+  ) async {
+    String username = 'rzp_test_rI34j5e3LyHywP';
+    String password = 'eNnvy1APbAD1lnocgHX0yuQ0';
+    String basicAuth =
+        'Basic ' + base64Encode(utf8.encode('$username:$password'));
+    final url = 'https://api.razorpay.com/v1/invoices/';
+    final response = await http.post(url,
+        headers: <String, String>{
+          'authorization': basicAuth,
+          'Content-Type': 'application/json'
+        },
+        body: json.encode({
+          "customer": {"name": name, "email": email, "contact": mobile},
+          "type": "link",
+          "view_less": 1,
+          "amount": double.parse(amount) * 100,
+          "currency": "INR",
+          "description": "Payment Link for the service of $make $model",
+          "receipt": 'bookingId123456',
+          "reminder_enable": true,
+          "sms_notify": 1,
+          "email_notify": 1,
+          "expire_by": 1793630556
+          // "callback_url": "https://example-callback-url.com/",
+          // "callback_method": "get"
+        }));
+    final extractedData = json.decode(response.body) as Map<String, dynamic>;
+    print(extractedData);
+    print(extractedData['id']);
+    return extractedData['id'];
+  }
+
+  Future<bool> verifyPayment(String paymentId) async {
+    String username = 'rzp_test_rI34j5e3LyHywP';
+    String password = 'eNnvy1APbAD1lnocgHX0yuQ0';
+    String basicAuth =
+        'Basic ' + base64Encode(utf8.encode('$username:$password'));
+    final url = 'https://api.razorpay.com/v1/invoices/$paymentId';
+    final response = await http.get(
+      url,
+      headers: <String, String>{
+        'authorization': basicAuth,
+        'Content-Type': 'application/json'
+      },
+    );
+    final extractedData = json.decode(response.body) as Map<String, dynamic>;
+    if (extractedData['status'] == 'paid') {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   Future<void> getpreimages(String bookingId) async {
