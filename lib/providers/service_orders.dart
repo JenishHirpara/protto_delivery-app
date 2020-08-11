@@ -133,7 +133,7 @@ class ServiceOrders with ChangeNotifier {
         final extractedData2 =
             json.decode(response2.body) as Map<String, dynamic>;
         data.insert(
-          i,
+          0,
           ServiceOrderItem(
             id: extractedData1['data'][i]['id'],
             bookingId: extractedData1['data'][i]['booking_id'],
@@ -243,16 +243,16 @@ class ServiceOrders with ChangeNotifier {
 
   Future<void> addjob(
       String bookingId, int count, List<dynamic> data, String status) async {
-    final url = 'http://stage.protto.in/api/shivangi/bookingstatus.php';
-    final response = await http.patch(url,
-        body: json.encode({
-          'booking_id': bookingId,
-          'status': status,
-        }));
-    final extractedData = json.decode(response.body) as Map<String, dynamic>;
-    if (extractedData['message'] == 'status not incremented') {
-      throw HttpException('Jobs cannot be added right now');
-    }
+    // final url = 'http://stage.protto.in/api/shivangi/bookingstatus.php';
+    // final response = await http.patch(url,
+    //     body: json.encode({
+    //       'booking_id': bookingId,
+    //       'status': status,
+    //     }));
+    // final extractedData = json.decode(response.body) as Map<String, dynamic>;
+    // if (extractedData['message'] == 'status not incremented') {
+    //   throw HttpException('Jobs cannot be added right now');
+    // }
     const url1 = 'http://stage.protto.in/api/shivangi/addjob.php';
     await http.post(url1,
         body: json.encode({
