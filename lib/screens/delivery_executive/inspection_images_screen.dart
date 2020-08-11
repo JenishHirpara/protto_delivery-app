@@ -659,7 +659,10 @@ class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
                                                   postrating = newRating;
                                                 });
                                               },
+                                              divisions: 10,
                                               label: '$postrating',
+                                              min: 0,
+                                              max: 10,
                                             )
                                           : FlatButton(
                                               onPressed: () {

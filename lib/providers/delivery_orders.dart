@@ -133,7 +133,7 @@ class DeliveryOrders with ChangeNotifier {
       final extractedData2 =
           json.decode(response2.body) as Map<String, dynamic>;
       data.insert(
-        i,
+        0,
         DeliveryOrderItem(
           id: extractedData1['data'][i]['id'],
           bookingId: extractedData1['data'][i]['booking_id'],
@@ -238,13 +238,11 @@ class DeliveryOrders with ChangeNotifier {
           "amount": double.parse(amount) * 100,
           "currency": "INR",
           "description": "Payment Link for the service of $make $model",
-          "receipt": 'bookingId123456',
+          "receipt": bookingId,
           "reminder_enable": true,
           "sms_notify": 1,
           "email_notify": 1,
           "expire_by": 1793630556
-          // "callback_url": "https://example-callback-url.com/",
-          // "callback_method": "get"
         }));
     final extractedData = json.decode(response.body) as Map<String, dynamic>;
     print(extractedData);
