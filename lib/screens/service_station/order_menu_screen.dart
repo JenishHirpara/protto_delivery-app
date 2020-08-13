@@ -6,6 +6,7 @@ import '../../widgets/service_station_order_menu.dart';
 import '../../providers/service_orders.dart';
 import './delivery_info_screen.dart';
 import './jobs_screen.dart';
+import './coming_soon.dart';
 import './inspection_images_screen.dart';
 import '../../models/http_exception.dart';
 
@@ -117,16 +118,16 @@ class OrderMenuScreen extends StatelessWidget {
               physics: NeverScrollableScrollPhysics(),
               children: <Widget>[
                 ServiceStationOrderMenu(
-                  'Service/Jobs',
-                  JobsScreen.routeName,
-                  order,
-                  'assets/images/jobs.png',
-                ),
-                ServiceStationOrderMenu(
                   'Delivery Info',
                   DeliveryInfoScreen.routeName,
                   order,
                   'assets/images/delivery_info.png',
+                ),
+                ServiceStationOrderMenu(
+                  'Service/Jobs',
+                  JobsScreen.routeName,
+                  order,
+                  'assets/images/jobs.png',
                 ),
                 ServiceStationOrderMenu(
                   'Inspection Details',
@@ -136,7 +137,7 @@ class OrderMenuScreen extends StatelessWidget {
                 ),
                 ServiceStationOrderMenu(
                   'Part Ordering',
-                  DeliveryInfoScreen.routeName,
+                  ComingSoonScreen.routeName,
                   order,
                   'assets/images/part_ordering.png',
                 ),

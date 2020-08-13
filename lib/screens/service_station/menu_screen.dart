@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:protto_delivery_ex_app/screens/service_station/coming_soon.dart';
 import 'package:provider/provider.dart';
 
+import './coming_soon.dart';
 import '../../providers/service_station.dart';
 import '../../providers/service_orders.dart';
 import '../../widgets/service_station_menu.dart';
@@ -93,15 +95,15 @@ class MenuScreen extends StatelessWidget {
                     'assets/images/delivery_executives.png'),
                 ServiceStationMenu(
                     'Inventory Management',
-                    BookingsScreen.routeName,
+                    ComingSoonScreen.routeName,
                     'assets/images/inventory_management.png'),
-                ServiceStationMenu('Reports', BookingsScreen.routeName,
+                ServiceStationMenu('Reports', ComingSoonScreen.routeName,
                     'assets/images/reports.png'),
                 ServiceStationMenu(
                     'Protto Partner Details',
                     PartnerDetailsScreen.routeName,
                     'assets/images/protto_patner_details.png'),
-                ServiceStationMenu('Settlements', BookingsScreen.routeName,
+                ServiceStationMenu('Settlements', ComingSoonScreen.routeName,
                     'assets/images/settlements.png'),
               ],
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
