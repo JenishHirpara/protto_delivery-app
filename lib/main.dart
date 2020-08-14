@@ -109,12 +109,14 @@ class _MyAppState extends State<MyApp> {
           value: DeliveryExecutive(),
         ),
         ChangeNotifierProxyProvider<DeliveryExecutive, DeliveryOrders>(
+          create: (_) => DeliveryOrders(null, []),
           update: (ctx, deliveryprofile, previousOrders) => DeliveryOrders(
             deliveryprofile.item == null ? null : deliveryprofile.item.id,
             previousOrders == null ? [] : previousOrders.items,
           ),
         ),
         ChangeNotifierProxyProvider<ServiceStation, ServiceOrders>(
+          create: (_) => ServiceOrders(null, []),
           update: (ctx, serviceprofile, previousOrders) => ServiceOrders(
             serviceprofile.item1 == null ? null : serviceprofile.item1.id,
             previousOrders == null ? [] : previousOrders.items,

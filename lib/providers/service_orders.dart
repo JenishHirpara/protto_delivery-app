@@ -322,6 +322,36 @@ class ServiceOrders with ChangeNotifier {
     }
   }
 
+  void updateStatus(String bookingId) {
+    var index = _items.indexWhere((item) => item.bookingId == bookingId);
+    var oldItem = _items[index];
+    _items[index] = ServiceOrderItem(
+      address: oldItem.address,
+      bikeNumber: oldItem.bikeNumber,
+      bikeYear: oldItem.bikeYear,
+      bikeid: oldItem.bikeid,
+      bookingId: oldItem.bookingId,
+      customer: oldItem.customer,
+      date: oldItem.date,
+      deliveryType: oldItem.deliveryType,
+      flat: oldItem.flat,
+      id: oldItem.id,
+      landmark: oldItem.landmark,
+      latitude: oldItem.latitude,
+      longitude: oldItem.longitude,
+      make: oldItem.make,
+      model: oldItem.model,
+      rideable: oldItem.rideable,
+      serviceType: oldItem.serviceType,
+      specialRequest: oldItem.specialRequest,
+      status: '6',
+      time: oldItem.time,
+      deId: oldItem.deId,
+      deName: oldItem.deName,
+    );
+    notifyListeners();
+  }
+
   void logout() {
     _items.clear();
     _services = null;

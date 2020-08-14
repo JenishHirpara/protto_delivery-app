@@ -10,9 +10,14 @@ import './coming_soon.dart';
 import './inspection_images_screen.dart';
 import '../../models/http_exception.dart';
 
-class OrderMenuScreen extends StatelessWidget {
+class OrderMenuScreen extends StatefulWidget {
   static const routeName = 'service-station-menu2';
 
+  @override
+  _OrderMenuScreenState createState() => _OrderMenuScreenState();
+}
+
+class _OrderMenuScreenState extends State<OrderMenuScreen> {
   Future<void> _serviceDone(BuildContext context, String bookingId) {
     return showDialog(
       context: context,
@@ -27,6 +32,8 @@ class OrderMenuScreen extends StatelessWidget {
                   await Provider.of<ServiceOrders>(context, listen: false)
                       .incrementstatus(bookingId, '5',
                           'Service cannot be completed right now');
+                  Provider.of<ServiceOrders>(context, listen: false)
+                      .updateStatus(bookingId);
                   showDialog(
                     context: context,
                     builder: (ctx) {
@@ -35,7 +42,9 @@ class OrderMenuScreen extends StatelessWidget {
                         actions: <Widget>[
                           FlatButton(
                             onPressed: () {
+                              setState(() {});
                               Navigator.of(ctx).pop();
+                              Navigator.of(context).pop();
                             },
                             child: Text('Okay'),
                           ),
@@ -78,7 +87,7 @@ class OrderMenuScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final order = ModalRoute.of(context).settings.arguments as ServiceOrderItem;
+    var order = ModalRoute.of(context).settings.arguments as ServiceOrderItem;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -149,23 +158,25 @@ class OrderMenuScreen extends StatelessWidget {
                 mainAxisSpacing: 10,
               ),
             ),
-            Container(
-              margin: EdgeInsets.symmetric(
-                vertical: 40,
-                horizontal: 20,
-              ),
-              width: double.infinity,
-              height: 50,
-              color: Colors.deepOrange,
-              child: RaisedButton(
-                color: Colors.deepOrange,
-                onPressed: () => _serviceDone(context, order.bookingId),
-                child: Text(
-                  'Service Done',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            )
+            int.parse(order.status) >= 6
+                ? Container()
+                : Container(
+                    margin: EdgeInsets.symmetric(
+                      vertical: 40,
+                      horizontal: 20,
+                    ),
+                    width: double.infinity,
+                    height: 50,
+                    color: Colors.deepOrange,
+                    child: RaisedButton(
+                      color: Colors.deepOrange,
+                      onPressed: () => _serviceDone(context, order.bookingId),
+                      child: Text(
+                        'Service Done',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
           ],
         ),
       ),

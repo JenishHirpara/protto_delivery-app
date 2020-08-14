@@ -34,19 +34,46 @@ class _ServiceJobsDialogState extends State<ServiceJobsDialog> {
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
+              Text(
+                'Add Jobs',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              ),
+              ListView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemBuilder: (ctx, i) => data[i],
+                itemCount: data.length,
+              ),
+              SizedBox(height: 30),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text(
-                    'Add Jobs',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
+                children: [
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.3,
+                    height: 40,
+                    child: RaisedButton(
+                      child: Text(
+                        'Add a job',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      color: Colors.deepOrange,
+                      onPressed: () {
+                        setState(() {
+                          var _job = Job();
+                          data.add(JobForm(
+                            job: _job,
+                          ));
+                        });
+                      },
+                      elevation: 0,
                     ),
                   ),
                   Container(
-                    width: 100,
-                    height: 35,
+                    width: MediaQuery.of(context).size.width * 0.3,
+                    height: 40,
                     decoration: BoxDecoration(
                       border: Border.all(
                         color: Colors.deepOrange,
@@ -54,7 +81,7 @@ class _ServiceJobsDialogState extends State<ServiceJobsDialog> {
                     ),
                     child: RaisedButton(
                       child: Text(
-                        'DONE',
+                        'Done',
                         style: TextStyle(color: Colors.deepOrange),
                       ),
                       onPressed: () => onSave(),
@@ -63,36 +90,6 @@ class _ServiceJobsDialogState extends State<ServiceJobsDialog> {
                     ),
                   ),
                 ],
-              ),
-              data.length <= 0
-                  ? Center(
-                      child: Text('Press the add button to add some jobs'),
-                    )
-                  : ListView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemBuilder: (ctx, i) => data[i],
-                      itemCount: data.length,
-                    ),
-              SizedBox(height: 30),
-              Container(
-                width: 150,
-                child: RaisedButton(
-                  child: Text(
-                    'ADD',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  color: Colors.deepOrange,
-                  onPressed: () {
-                    setState(() {
-                      var _job = Job();
-                      data.add(JobForm(
-                        job: _job,
-                      ));
-                    });
-                  },
-                  elevation: 0,
-                ),
               ),
             ],
           ),

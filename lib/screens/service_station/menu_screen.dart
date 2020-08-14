@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:protto_delivery_ex_app/screens/service_station/coming_soon.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import './coming_soon.dart';
 import '../../providers/service_station.dart';
@@ -13,6 +13,14 @@ import '../welcome_screen.dart';
 
 class MenuScreen extends StatelessWidget {
   static const routeName = '/service-station-menu';
+
+  void _launchCaller(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,65 +78,66 @@ class MenuScreen extends StatelessWidget {
         ],
       ),
       body: SingleChildScrollView(
-          child: Container(
-        width: double.infinity,
-        child: Column(
-          children: <Widget>[
-            Text(
-              'Menu',
-              style: TextStyle(
-                color: Colors.grey,
-                fontSize: 22,
-              ),
-            ),
-            SizedBox(height: 20),
-            GridView(
-              shrinkWrap: true,
-              padding: EdgeInsets.all(0),
-              physics: NeverScrollableScrollPhysics(),
-              children: <Widget>[
-                ServiceStationMenu('Bookings', BookingsScreen.routeName,
-                    'assets/images/bookings.png'),
-                ServiceStationMenu(
-                    'Delivery Executives',
-                    DeliveryExecutivesScreen.routeName,
-                    'assets/images/delivery_executives.png'),
-                ServiceStationMenu(
-                    'Inventory Management',
-                    ComingSoonScreen.routeName,
-                    'assets/images/inventory_management.png'),
-                ServiceStationMenu('Reports', ComingSoonScreen.routeName,
-                    'assets/images/reports.png'),
-                ServiceStationMenu(
-                    'Protto Partner Details',
-                    PartnerDetailsScreen.routeName,
-                    'assets/images/protto_patner_details.png'),
-                ServiceStationMenu('Settlements', ComingSoonScreen.routeName,
-                    'assets/images/settlements.png'),
-              ],
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 1,
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 20),
-              width: double.infinity,
-              height: 45,
-              child: RaisedButton(
-                child: Text(
-                  'Protto Support',
-                  style: TextStyle(color: Colors.white),
+        child: Container(
+          width: double.infinity,
+          child: Column(
+            children: <Widget>[
+              Text(
+                'Menu',
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 22,
                 ),
-                onPressed: () {},
-                elevation: 0,
-                color: Colors.deepOrange,
               ),
-            ),
-            SizedBox(height: 20),
-          ],
+              SizedBox(height: 20),
+              GridView(
+                shrinkWrap: true,
+                padding: EdgeInsets.all(0),
+                physics: NeverScrollableScrollPhysics(),
+                children: <Widget>[
+                  ServiceStationMenu('Bookings', BookingsScreen.routeName,
+                      'assets/images/bookings.png'),
+                  ServiceStationMenu(
+                      'Delivery Executives',
+                      DeliveryExecutivesScreen.routeName,
+                      'assets/images/delivery_executives.png'),
+                  ServiceStationMenu(
+                      'Inventory Management',
+                      ComingSoonScreen.routeName,
+                      'assets/images/inventory_management.png'),
+                  ServiceStationMenu('Reports', ComingSoonScreen.routeName,
+                      'assets/images/reports.png'),
+                  ServiceStationMenu(
+                      'Protto Partner Details',
+                      PartnerDetailsScreen.routeName,
+                      'assets/images/protto_patner_details.png'),
+                  ServiceStationMenu('Settlements', ComingSoonScreen.routeName,
+                      'assets/images/settlements.png'),
+                ],
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 1,
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 20),
+                width: double.infinity,
+                height: 45,
+                child: RaisedButton(
+                  child: Text(
+                    'Protto Support',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onPressed: () => _launchCaller('tel:+919136863480'),
+                  elevation: 0,
+                  color: Colors.deepOrange,
+                ),
+              ),
+              SizedBox(height: 20),
+            ],
+          ),
         ),
-      )),
+      ),
     );
   }
 }
