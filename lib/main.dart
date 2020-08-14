@@ -21,6 +21,7 @@ import './screens/service_station/delivery_info_screen.dart' as DeliveryInfo;
 import './screens/service_station/jobs_screen.dart';
 import './screens/service_station/partner_details_screen.dart';
 import './screens/service_station/inspection_images_screen.dart' as Inspection;
+import './screens/service_station/coming_soon.dart';
 import './providers/service_station.dart';
 import './providers/delivery_executive.dart';
 import './providers/service_orders.dart';
@@ -65,6 +66,7 @@ class _MyAppState extends State<MyApp> {
     DeliveryExecutivesScreen.routeName: (ctx) => DeliveryExecutivesScreen(),
     EditDeliveryexScreen.routeName: (ctx) => EditDeliveryexScreen(),
     SplashScreen.routeName: (ctx) => SplashScreen(),
+    ComingSoonScreen.routeName: (ctx) => ComingSoonScreen()
   };
   @override
   void didChangeDependencies() async {
