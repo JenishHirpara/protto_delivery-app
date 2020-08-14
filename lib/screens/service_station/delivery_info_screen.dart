@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:location/location.dart';
-import 'package:url_launcher/url_launcher.dart';
+// import 'package:location/location.dart';
+// import 'package:url_launcher/url_launcher.dart';
 
 import '../../providers/service_orders.dart';
 import '../../providers/service_station.dart';
@@ -60,48 +60,13 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
           .assignDeliveryExecutive(order, _userName, _id);
       Navigator.of(context).pop();
       Navigator.of(context).pop();
-      Navigator.of(context).pop();
+      //Navigator.of(context).pop();
     } catch (error) {}
-  }
-
-  Location _location = new Location();
-  var _locationData;
-  bool _serviceEnabled;
-  PermissionStatus _permissionGranted;
-
-  _launchURL(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
-    }
-  }
-
-  void _openMap(ServiceOrderItem order) async {
-    _serviceEnabled = await _location.serviceEnabled();
-    if (!_serviceEnabled) {
-      _serviceEnabled = await _location.requestService();
-    }
-    if (!_serviceEnabled) {
-      return;
-    }
-    _permissionGranted = await _location.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
-      _permissionGranted = await _location.requestPermission();
-    }
-    if (_permissionGranted != PermissionStatus.granted) {
-      return;
-    }
-    _locationData = await _location.getLocation();
-    var url =
-        'https://www.google.com/maps/dir/?api=1&origin=${_locationData.latitude},${_locationData.longitude}&destination=${order.latitude},${order.longitude}&travelmode=driving&dir_action=navigate';
-    _launchURL(url);
   }
 
   @override
   Widget build(BuildContext context) {
     final order = ModalRoute.of(context).settings.arguments as ServiceOrderItem;
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -184,46 +149,26 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
                             ),
                           ),
                           SizedBox(height: 10),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Expanded(
-                                flex: 9,
-                                child: RichText(
-                                  text: TextSpan(
-                                    children: <TextSpan>[
-                                      TextSpan(
-                                        text: 'Address: ',
-                                        style: GoogleFonts.cantataOne(
-                                          color:
-                                              Color.fromRGBO(128, 128, 128, 1),
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      TextSpan(
-                                        text: order.landmark != ''
-                                            ? '${order.flat}, ${order.landmark}, ${order.address}'
-                                            : '${order.flat}, ${order.address}',
-                                        style: GoogleFonts.cantataOne(
-                                          color: Colors.grey,
-                                        ),
-                                      ),
-                                    ],
+                          RichText(
+                            text: TextSpan(
+                              children: <TextSpan>[
+                                TextSpan(
+                                  text: 'Address: ',
+                                  style: GoogleFonts.cantataOne(
+                                    color: Color.fromRGBO(128, 128, 128, 1),
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                              ),
-                              Expanded(
-                                flex: 1,
-                                child: IconButton(
-                                  icon: Icon(
-                                    Icons.location_on,
+                                TextSpan(
+                                  text: order.landmark != ''
+                                      ? '${order.flat}, ${order.landmark}, ${order.address}'
+                                      : '${order.flat}, ${order.address}',
+                                  style: GoogleFonts.cantataOne(
                                     color: Colors.grey,
                                   ),
-                                  onPressed: () => _openMap(order),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                           SizedBox(height: 4),
                           Row(
@@ -275,7 +220,7 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
                               ),
                               SizedBox(width: 8),
                               Text(
-                                order.deName == null
+                                order.deId == '0'
                                     ? 'Not assigned'
                                     : order.deName,
                                 style: GoogleFonts.cantataOne(
@@ -302,46 +247,26 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
                             ),
                           ),
                           SizedBox(height: 10),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Expanded(
-                                flex: 9,
-                                child: RichText(
-                                  text: TextSpan(
-                                    children: <TextSpan>[
-                                      TextSpan(
-                                        text: 'Address: ',
-                                        style: GoogleFonts.cantataOne(
-                                          color:
-                                              Color.fromRGBO(128, 128, 128, 1),
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      TextSpan(
-                                        text: order.landmark != ''
-                                            ? '${order.flat}, ${order.landmark}, ${order.address}'
-                                            : '${order.flat}, ${order.address}',
-                                        style: GoogleFonts.cantataOne(
-                                          color: Colors.grey,
-                                        ),
-                                      ),
-                                    ],
+                          RichText(
+                            text: TextSpan(
+                              children: <TextSpan>[
+                                TextSpan(
+                                  text: 'Address: ',
+                                  style: GoogleFonts.cantataOne(
+                                    color: Color.fromRGBO(128, 128, 128, 1),
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                              ),
-                              Expanded(
-                                flex: 1,
-                                child: IconButton(
-                                  icon: Icon(
-                                    Icons.location_on,
+                                TextSpan(
+                                  text: order.landmark != ''
+                                      ? '${order.flat}, ${order.landmark}, ${order.address}'
+                                      : '${order.flat}, ${order.address}',
+                                  style: GoogleFonts.cantataOne(
                                     color: Colors.grey,
                                   ),
-                                  onPressed: () => _openMap(order),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                           SizedBox(height: 4),
                           Row(
@@ -355,7 +280,9 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
                               ),
                               SizedBox(width: 8),
                               Text(
-                                order.deName,
+                                order.deId == '0'
+                                    ? 'Not assigned'
+                                    : order.deName,
                                 style: GoogleFonts.cantataOne(
                                   color: Colors.grey,
                                 ),
@@ -365,61 +292,67 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
                         ],
                       ),
                     ),
-                    Container(
-                      width: double.infinity,
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 24, vertical: 5),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            'Delivery Executive Name',
-                            style: TextStyle(
-                              color: Color.fromRGBO(112, 112, 112, 1),
-                            ),
-                          ),
-                          Form(
-                            key: _form,
-                            child: DropdownButtonFormField(
-                              items: deliveryEx.map<DropdownMenuItem>((ex) {
-                                return DropdownMenuItem<String>(
-                                  child: Text(
-                                    ex.userName,
-                                    textAlign: TextAlign.left,
+                    order.deId == '0'
+                        ? Container(
+                            width: double.infinity,
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 24, vertical: 5),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  'Delivery Executive Name',
+                                  style: TextStyle(
+                                    color: Color.fromRGBO(112, 112, 112, 1),
                                   ),
-                                  value: ex.userName,
-                                );
-                              }).toList(),
-                              onChanged: (value) {
-                                _userName = value;
-                              },
-                              onSaved: (value) {
-                                _userName = value;
-                                _id = Provider.of<ServiceStation>(context,
-                                        listen: false)
-                                    .item2
-                                    .firstWhere((ex) => ex.userName == value)
-                                    .id;
-                              },
+                                ),
+                                Form(
+                                  key: _form,
+                                  child: DropdownButtonFormField(
+                                    items:
+                                        deliveryEx.map<DropdownMenuItem>((ex) {
+                                      return DropdownMenuItem<String>(
+                                        child: Text(
+                                          ex.userName,
+                                          textAlign: TextAlign.left,
+                                        ),
+                                        value: ex.userName,
+                                      );
+                                    }).toList(),
+                                    onChanged: (value) {
+                                      _userName = value;
+                                    },
+                                    onSaved: (value) {
+                                      _userName = value;
+                                      _id = Provider.of<ServiceStation>(context,
+                                              listen: false)
+                                          .item2
+                                          .firstWhere(
+                                              (ex) => ex.userName == value)
+                                          .id;
+                                    },
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
+                          )
+                        : Container(),
                     SizedBox(height: 35),
-                    Container(
-                      height: 45,
-                      width: MediaQuery.of(context).size.width * 0.5,
-                      child: RaisedButton(
-                        onPressed: () => _saveForm(order),
-                        child: Text(
-                          'DONE',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        color: Colors.deepOrange,
-                        elevation: 0,
-                      ),
-                    ),
+                    order.deId == '0'
+                        ? Container(
+                            height: 45,
+                            width: MediaQuery.of(context).size.width * 0.5,
+                            child: RaisedButton(
+                              onPressed: () => _saveForm(order),
+                              child: Text(
+                                'DONE',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              color: Colors.deepOrange,
+                              elevation: 0,
+                            ),
+                          )
+                        : Container(),
                   ],
                 ),
               ),

@@ -36,7 +36,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final orders = Provider.of<ServiceOrders>(context, listen: false).items;
+    final orders = Provider.of<ServiceOrders>(context).items;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,

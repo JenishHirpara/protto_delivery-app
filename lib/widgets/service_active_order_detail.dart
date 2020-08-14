@@ -45,7 +45,7 @@ class ServiceActiveOrderDetail extends StatelessWidget {
           ),
           child: Container(
             width: double.infinity,
-            height: order.landmark != '' ? 265 : 245,
+            //height: order.landmark != '' ? 265 : 245,
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(10),
@@ -252,6 +252,7 @@ class ServiceActiveOrderDetail extends StatelessWidget {
                                 ),
                               ),
                             ),
+                            SizedBox(height: 10),
                           ],
                         ),
                       ),
