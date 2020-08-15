@@ -37,12 +37,14 @@ class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
   void _savePage(BuildContext context, String bookingId) async {
     try {
       if (status != '7') {
-        if (preOdometer.text.isEmpty || preImgUrl.length != 6) {
+        if (preOdometer.text.isEmpty ||
+            preImgUrl.length != 6 ||
+            !isPreFuelSet) {
           showDialog(
             context: context,
             builder: (ctx) {
               return AlertDialog(
-                title: Text('There should be 6 images and an odometer reading'),
+                title: Text('There should be 6 images,odometer & fuel reading'),
                 actions: <Widget>[
                   FlatButton(
                     onPressed: () {
@@ -66,12 +68,14 @@ class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
           Navigator.of(context).pop();
         }
       } else {
-        if (postOdometer.text.isEmpty || postImgUrl.length != 6) {
+        if (postOdometer.text.isEmpty ||
+            postImgUrl.length != 6 ||
+            !isPostFuelSet) {
           showDialog(
             context: context,
             builder: (ctx) {
               return AlertDialog(
-                title: Text('There should be 6 images and an odometer reading'),
+                title: Text('There should be 6 images,odometer & fuel reading'),
                 actions: <Widget>[
                   FlatButton(
                     onPressed: () {

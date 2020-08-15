@@ -316,6 +316,7 @@ class DeliveryOrders with ChangeNotifier {
     _postImages.add(extractedData['data']['number_pic']);
     _postOdometerReading = extractedData['data']['odometer_reading'];
     _postFuelLevel = extractedData['data']['fuel_level'];
+    print(_postFuelLevel);
     notifyListeners();
   }
 

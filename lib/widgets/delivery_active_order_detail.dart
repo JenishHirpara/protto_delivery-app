@@ -2,23 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-import '../screens/delivery_executive/menu_screen.dart';
+//import '../screens/delivery_executive/menu_screen.dart';
+import '../screens/delivery_executive/active_order_screen.dart';
 import '../providers/delivery_orders.dart';
 
 class DeliveryActiveOrderDetail extends StatelessWidget {
   String _getStatus(DeliveryOrderItem order) {
-    if (order.status == '1') {
+    if (order.status == '1' || order.status == '2') {
       return 'Service Confirmed';
-    } else if (order.status == '2' || order.status == '3') {
+    } else if (order.status == '3') {
       return 'Picked Up';
     } else if (order.status == '4') {
       return 'Dropped at station';
     } else if (order.status == '5') {
       return 'Service Started';
-    } else if (order.status == '6' ||
-        order.status == '7' ||
-        order.status == '8') {
+    } else if (order.status == '6') {
       return 'Service done';
+    } else if (order.status == '7' || order.status == '8') {
+      return 'Picked from station';
     } else if (order.status == '9') {
       return 'Delivered';
     } else {
@@ -33,8 +34,10 @@ class DeliveryActiveOrderDetail extends StatelessWidget {
       borderRadius: BorderRadius.circular(10),
       child: InkWell(
         onTap: () {
-          Navigator.of(context)
-              .pushNamed(MenuScreen.routeName, arguments: order);
+          // Navigator.of(context)
+          //     .pushNamed(MenuScreen.routeName, arguments: order);
+          Navigator.of(context).push(
+              MaterialPageRoute(builder: (ctx) => ActiveOrderScreen(order)));
         },
         child: Card(
           elevation: 2,

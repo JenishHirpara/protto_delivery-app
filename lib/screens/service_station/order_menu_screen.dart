@@ -18,7 +18,8 @@ class OrderMenuScreen extends StatefulWidget {
 }
 
 class _OrderMenuScreenState extends State<OrderMenuScreen> {
-  Future<void> _serviceDone(BuildContext context, String bookingId) {
+  Future<void> _serviceDone(
+      BuildContext context, String bookingId, String jobApprove) {
     return showDialog(
       context: context,
       builder: (ctx) {
@@ -29,29 +30,48 @@ class _OrderMenuScreenState extends State<OrderMenuScreen> {
               onPressed: () async {
                 Navigator.of(ctx).pop();
                 try {
-                  await Provider.of<ServiceOrders>(context, listen: false)
-                      .incrementstatus(bookingId, '5',
-                          'Service cannot be completed right now');
-                  Provider.of<ServiceOrders>(context, listen: false)
-                      .updateStatus(bookingId);
-                  showDialog(
-                    context: context,
-                    builder: (ctx) {
-                      return AlertDialog(
-                        title: Text('Service Done successful!'),
-                        actions: <Widget>[
-                          FlatButton(
-                            onPressed: () {
-                              setState(() {});
-                              Navigator.of(ctx).pop();
-                              Navigator.of(context).pop();
-                            },
-                            child: Text('Okay'),
-                          ),
-                        ],
-                      );
-                    },
-                  );
+                  if (jobApprove == '1') {
+                    await Provider.of<ServiceOrders>(context, listen: false)
+                        .incrementstatus(bookingId, '5',
+                            'Service cannot be completed right now');
+                    Provider.of<ServiceOrders>(context, listen: false)
+                        .updateStatus(bookingId);
+                    showDialog(
+                      context: context,
+                      builder: (ctx) {
+                        return AlertDialog(
+                          title: Text('Service Done successful!'),
+                          actions: <Widget>[
+                            FlatButton(
+                              onPressed: () {
+                                setState(() {});
+                                Navigator.of(ctx).pop();
+                                Navigator.of(context).pop();
+                              },
+                              child: Text('Okay'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  } else {
+                    showDialog(
+                      context: context,
+                      builder: (ctx) {
+                        return AlertDialog(
+                          title: Text('Customer has not approved the jobs yet'),
+                          actions: <Widget>[
+                            FlatButton(
+                              onPressed: () {
+                                Navigator.of(ctx).pop();
+                              },
+                              child: Text('Okay'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }
                 } on HttpException catch (error) {
                   showDialog(
                     context: context,
@@ -170,7 +190,8 @@ class _OrderMenuScreenState extends State<OrderMenuScreen> {
                     color: Colors.deepOrange,
                     child: RaisedButton(
                       color: Colors.deepOrange,
-                      onPressed: () => _serviceDone(context, order.bookingId),
+                      onPressed: () => _serviceDone(
+                          context, order.bookingId, order.jobApprove),
                       child: Text(
                         'Service Done',
                         style: TextStyle(color: Colors.white),

@@ -31,16 +31,17 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
       });
       var actualdeliveryEx =
           Provider.of<ServiceStation>(context, listen: false).item2;
-      deliveryEx = [actualdeliveryEx[0]];
-      if (actualdeliveryEx.length != 0) {
-        for (int i = 1; i < actualdeliveryEx.length; i++) {
-          var duplicate = deliveryEx.indexWhere(
-              (user) => user.userName == actualdeliveryEx[i].userName);
-          if (duplicate == -1) {
-            deliveryEx.add(actualdeliveryEx[i]);
-          }
-        }
-      }
+      deliveryEx = actualdeliveryEx.where((ex) => !ex.assigned).toList();
+      // deliveryEx = [availabledeliveryEx[0]];
+      // if (actualdeliveryEx.length != 0) {
+      //   for (int i = 1; i < actualdeliveryEx.length; i++) {
+      //     var duplicate = deliveryEx.indexWhere(
+      //         (user) => user.userName == actualdeliveryEx[i].userName);
+      //     if (duplicate == -1) {
+      //       deliveryEx.add(actualdeliveryEx[i]);
+      //     }
+      //   }
+      // }
     }
     _isInit = false;
     super.didChangeDependencies();

@@ -9,18 +9,19 @@ class ServiceActiveOrderDetail extends StatelessWidget {
   String _getStatus(ServiceOrderItem order) {
     if (order.status == '1' && order.deId == '0') {
       return 'Pending';
-    } else if (order.status == '1' && order.deId != '0') {
+    } else if ((order.status == '1' && order.deId != '0') ||
+        order.status == '2') {
       return 'Service Confirmed';
-    } else if (order.status == '2' || order.status == '3') {
+    } else if (order.status == '3') {
       return 'Picked Up';
     } else if (order.status == '4') {
       return 'Dropped at station';
     } else if (order.status == '5') {
       return 'Service Started';
-    } else if (order.status == '6' ||
-        order.status == '7' ||
-        order.status == '8') {
+    } else if (order.status == '6') {
       return 'Service done';
+    } else if (order.status == '7' || order.status == '8') {
+      return 'Picked from station';
     } else if (order.status == '9') {
       return 'Delivered';
     } else {
