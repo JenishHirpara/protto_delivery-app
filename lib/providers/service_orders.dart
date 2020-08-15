@@ -28,6 +28,7 @@ class ServiceOrderItem with ChangeNotifier {
   final String deId;
   final String deName;
   final String specialRequest;
+  final String jobApprove;
 
   ServiceOrderItem({
     @required this.id,
@@ -50,6 +51,7 @@ class ServiceOrderItem with ChangeNotifier {
     @required this.bikeYear,
     @required this.status,
     @required this.specialRequest,
+    @required this.jobApprove,
     this.deId,
     this.deName,
   });
@@ -151,6 +153,7 @@ class ServiceOrders with ChangeNotifier {
             bikeid: extractedData1['data'][i]['bike_id'],
             deId: extractedData1['data'][i]['de_id'],
             deName: extractedData1['data'][i]['de_name'],
+            jobApprove: extractedData1['data'][i]['job_approve'],
             deliveryType: extractedData1['data'][i]['delivery_type'],
             customer: extractedData1['data'][i]['cust_name'],
             bikeNumber: extractedData2['data']['bike_reg'],
@@ -191,6 +194,7 @@ class ServiceOrders with ChangeNotifier {
       longitude: item.longitude,
       specialRequest: item.specialRequest,
       deliveryType: item.deliveryType,
+      jobApprove: item.jobApprove,
       customer: item.customer,
       make: item.make,
       model: item.model,
@@ -343,6 +347,7 @@ class ServiceOrders with ChangeNotifier {
       model: oldItem.model,
       rideable: oldItem.rideable,
       serviceType: oldItem.serviceType,
+      jobApprove: oldItem.jobApprove,
       specialRequest: oldItem.specialRequest,
       status: '6',
       time: oldItem.time,

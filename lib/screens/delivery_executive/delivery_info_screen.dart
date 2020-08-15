@@ -6,7 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/delivery_orders.dart';
-import '../../models/http_exception.dart';
+//import '../../models/http_exception.dart';
 
 class DeliveryInfoScreen extends StatefulWidget {
   static const routeName = '/delivery-ex-info';
@@ -82,87 +82,87 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
     _launchURL(url);
   }
 
-  void _dropBikeToSS(String bookingId) async {
-    try {
-      await Provider.of<DeliveryOrders>(context, listen: false).incrementstatus(
-          bookingId, '3', 'Bike cannot be dropped to SS right now');
-      showDialog(
-        context: context,
-        builder: (ctx) {
-          return AlertDialog(
-            title: Text('Bike drop to Service Station approved!'),
-            actions: <Widget>[
-              FlatButton(
-                child: Text('Okay'),
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
-    } on HttpException catch (error) {
-      showDialog(
-        context: context,
-        builder: (ctx) {
-          return AlertDialog(
-            title: Text('Error occurred!'),
-            content: Text(error.message),
-            actions: <Widget>[
-              FlatButton(
-                child: Text('Okay'),
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
-    }
-  }
+  // void _dropBikeToSS(String bookingId) async {
+  //   try {
+  //     await Provider.of<DeliveryOrders>(context, listen: false).incrementstatus(
+  //         bookingId, '3', 'Bike cannot be dropped to SS right now');
+  //     showDialog(
+  //       context: context,
+  //       builder: (ctx) {
+  //         return AlertDialog(
+  //           title: Text('Bike drop to Service Station approved!'),
+  //           actions: <Widget>[
+  //             FlatButton(
+  //               child: Text('Okay'),
+  //               onPressed: () {
+  //                 Navigator.of(ctx).pop();
+  //               },
+  //             ),
+  //           ],
+  //         );
+  //       },
+  //     );
+  //   } on HttpException catch (error) {
+  //     showDialog(
+  //       context: context,
+  //       builder: (ctx) {
+  //         return AlertDialog(
+  //           title: Text('Error occurred!'),
+  //           content: Text(error.message),
+  //           actions: <Widget>[
+  //             FlatButton(
+  //               child: Text('Okay'),
+  //               onPressed: () {
+  //                 Navigator.of(ctx).pop();
+  //               },
+  //             ),
+  //           ],
+  //         );
+  //       },
+  //     );
+  //   }
+  // }
 
-  void _bikePickedFromSS(String bookingId) async {
-    try {
-      await Provider.of<DeliveryOrders>(context, listen: false).incrementstatus(
-          bookingId, '6', 'Bike cannot be picked from SS right now');
-      showDialog(
-        context: context,
-        builder: (ctx) {
-          return AlertDialog(
-            title: Text('Pick up bike from service station approved!'),
-            actions: <Widget>[
-              FlatButton(
-                child: Text('Okay'),
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
-    } on HttpException catch (error) {
-      showDialog(
-        context: context,
-        builder: (ctx) {
-          return AlertDialog(
-            title: Text('Error occurred!'),
-            content: Text(error.message),
-            actions: <Widget>[
-              FlatButton(
-                child: Text('Okay'),
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
-    }
-  }
+  // void _bikePickedFromSS(String bookingId) async {
+  //   try {
+  //     await Provider.of<DeliveryOrders>(context, listen: false).incrementstatus(
+  //         bookingId, '6', 'Bike cannot be picked from SS right now');
+  //     showDialog(
+  //       context: context,
+  //       builder: (ctx) {
+  //         return AlertDialog(
+  //           title: Text('Pick up bike from service station approved!'),
+  //           actions: <Widget>[
+  //             FlatButton(
+  //               child: Text('Okay'),
+  //               onPressed: () {
+  //                 Navigator.of(ctx).pop();
+  //               },
+  //             ),
+  //           ],
+  //         );
+  //       },
+  //     );
+  //   } on HttpException catch (error) {
+  //     showDialog(
+  //       context: context,
+  //       builder: (ctx) {
+  //         return AlertDialog(
+  //           title: Text('Error occurred!'),
+  //           content: Text(error.message),
+  //           actions: <Widget>[
+  //             FlatButton(
+  //               child: Text('Okay'),
+  //               onPressed: () {
+  //                 Navigator.of(ctx).pop();
+  //               },
+  //             ),
+  //           ],
+  //         );
+  //       },
+  //     );
+  //   }
+  // }
 
   Widget _otp(String otp) {
     return Container(
@@ -441,23 +441,23 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
                       ),
                       SizedBox(height: 10),
                       _otp(otp),
-                      SizedBox(height: 10),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 24),
-                        child: Container(
-                          width: double.infinity,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.deepOrange),
-                          ),
-                          child: RaisedButton(
-                            child: Text('Dropped To SS'),
-                            color: Colors.white,
-                            elevation: 0,
-                            onPressed: () => _dropBikeToSS(order.bookingId),
-                          ),
-                        ),
-                      ),
+                      // SizedBox(height: 10),
+                      // Padding(
+                      //   padding: EdgeInsets.symmetric(horizontal: 24),
+                      //   child: Container(
+                      //     width: double.infinity,
+                      //     height: 40,
+                      //     decoration: BoxDecoration(
+                      //       border: Border.all(color: Colors.deepOrange),
+                      //     ),
+                      //     child: RaisedButton(
+                      //       child: Text('Dropped To SS'),
+                      //       color: Colors.white,
+                      //       elevation: 0,
+                      //       onPressed: () => _dropBikeToSS(order.bookingId),
+                      //     ),
+                      //   ),
+                      // ),
                       SizedBox(height: 20),
                       Container(
                         width: double.infinity,
@@ -517,23 +517,23 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
                           ],
                         ),
                       ),
-                      SizedBox(height: 10),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 24),
-                        child: Container(
-                          width: double.infinity,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.deepOrange),
-                          ),
-                          child: RaisedButton(
-                            child: Text('Picked From SS'),
-                            color: Colors.white,
-                            elevation: 0,
-                            onPressed: () => _bikePickedFromSS(order.bookingId),
-                          ),
-                        ),
-                      ),
+                      // SizedBox(height: 10),
+                      // Padding(
+                      //   padding: EdgeInsets.symmetric(horizontal: 24),
+                      //   child: Container(
+                      //     width: double.infinity,
+                      //     height: 40,
+                      //     decoration: BoxDecoration(
+                      //       border: Border.all(color: Colors.deepOrange),
+                      //     ),
+                      //     child: RaisedButton(
+                      //       child: Text('Picked From SS'),
+                      //       color: Colors.white,
+                      //       elevation: 0,
+                      //       onPressed: () => _bikePickedFromSS(order.bookingId),
+                      //     ),
+                      //   ),
+                      // ),
                       SizedBox(height: 20),
                       dueAmount == 0.0 && int.parse(status) >= 7
                           ? Text(

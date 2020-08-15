@@ -86,6 +86,7 @@ class _DisplayInspectionImagesScreenState
           Provider.of<DeliveryOrders>(context, listen: false).preFuelLevel;
       getPostFuel =
           Provider.of<DeliveryOrders>(context, listen: false).postFuelLevel;
+      print(getPostFuel);
     }
     _isInit = false;
     super.didChangeDependencies();
@@ -419,7 +420,7 @@ class _DisplayInspectionImagesScreenState
                                 ),
                               )
                             : Text(
-                                getPostOdometer,
+                                getPostFuel,
                                 style: GoogleFonts.cantataOne(
                                   color: Color.fromRGBO(112, 112, 112, 1),
                                 ),

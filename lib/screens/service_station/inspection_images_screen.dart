@@ -377,7 +377,7 @@ class _InspectionImagesScreenState extends State<InspectionImagesScreen> {
                                 ),
                               )
                             : Text(
-                                getPostOdometer,
+                                getPostFuel,
                                 style: GoogleFonts.cantataOne(
                                   color: Color.fromRGBO(112, 112, 112, 1),
                                 ),
