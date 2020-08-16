@@ -45,7 +45,7 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
   verifyPayment(BuildContext context, DeliveryOrderItem order) async {
     if (paymentId != null) {
       var decision = await Provider.of<DeliveryOrders>(context, listen: false)
-          .verifyPayment(paymentId);
+          .verifyPayment(paymentId, order.bookingId);
       if (decision) {
         var message = await Provider.of<DeliveryOrders>(context, listen: false)
             .paymentreceived(order.bookingId);

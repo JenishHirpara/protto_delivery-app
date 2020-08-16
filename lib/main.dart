@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import './screens/welcome_screen.dart';
 import './screens/delivery_executive/login_screen.dart';
@@ -41,6 +42,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  final storage = new FlutterSecureStorage();
   var _isInit = true;
   var _isLoading = false;
   var _type;
@@ -73,6 +75,8 @@ class _MyAppState extends State<MyApp> {
   @override
   void didChangeDependencies() async {
     if (_isInit) {
+      await storage.write(key: 'key', value: 'apikey');
+      await storage.write(key: 'value', value: 'proflutter');
       setState(() {
         _isLoading = true;
       });

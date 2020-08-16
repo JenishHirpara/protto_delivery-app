@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../models/http_exception.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class DeliveryOrderItem with ChangeNotifier {
   final String id;
@@ -117,9 +118,13 @@ class DeliveryOrders with ChangeNotifier {
   }
 
   Future<void> fetchAndSetOrders() async {
-    final url1 =
-        'http://stage.protto.in/api/hitesh/fetchbookingsDE.php?de_id=$userId';
-    final response1 = await http.get(url1);
+    final url1 = 'http://api.protto.in/fetchbookingsDE.php?de_id=$userId';
+    final storage = new FlutterSecureStorage();
+    String key = await storage.read(key: 'key');
+    String value = await storage.read(key: 'value');
+    String basicAuth = 'Basic ' + base64Encode(utf8.encode('$key:$value'));
+    final response1 = await http
+        .get(url1, headers: <String, String>{'Authorization': basicAuth});
     final extractedData1 = json.decode(response1.body) as Map<String, dynamic>;
 
     List<DeliveryOrderItem> data = [];
@@ -128,8 +133,9 @@ class DeliveryOrders with ChangeNotifier {
     }
     for (int i = 0; i < int.parse(extractedData1['count']); i++) {
       final bikeid = extractedData1['data'][i]['bike_id'];
-      final url2 = 'http://stage.protto.in/api/shivangi/getbike.php/$bikeid';
-      final response2 = await http.get(url2);
+      final url2 = 'http://api.protto.in/getbike.php/$bikeid';
+      final response2 = await http
+          .get(url2, headers: <String, String>{'Authorization': basicAuth});
       final extractedData2 =
           json.decode(response2.body) as Map<String, dynamic>;
       data.insert(
@@ -169,18 +175,26 @@ class DeliveryOrders with ChangeNotifier {
   }
 
   Future<void> getservices(String bookingId) async {
-    final url =
-        'http://stage.protto.in/api/shivangi/getservicetype.php/$bookingId';
-    final response = await http.get(url);
+    final url = 'http://api.protto.in/getservicetype.php/$bookingId';
+    final storage = new FlutterSecureStorage();
+    String key = await storage.read(key: 'key');
+    String value = await storage.read(key: 'value');
+    String basicAuth = 'Basic ' + base64Encode(utf8.encode('$key:$value'));
+    final response = await http
+        .get(url, headers: <String, String>{'Authorization': basicAuth});
     final extractedData = json.decode(response.body) as Map<String, dynamic>;
     _services = extractedData['data'];
     notifyListeners();
   }
 
   Future<void> approveotp(String bookingId) async {
-    final url =
-        'http://stage.protto.in/api/hitesh/getotpapprove.php?booking_id=$bookingId';
-    final response = await http.get(url);
+    final url = 'http://api.protto.in/getotpapprove.php?booking_id=$bookingId';
+    final storage = new FlutterSecureStorage();
+    String key = await storage.read(key: 'key');
+    String value = await storage.read(key: 'value');
+    String basicAuth = 'Basic ' + base64Encode(utf8.encode('$key:$value'));
+    final response = await http
+        .get(url, headers: <String, String>{'Authorization': basicAuth});
     final extractedData = json.decode(response.body) as Map<String, dynamic>;
     if (extractedData['otp_approve'] == '0') {
       throw HttpException('Customer has not verified otp yet');
@@ -189,12 +203,17 @@ class DeliveryOrders with ChangeNotifier {
 
   Future<void> incrementstatus(
       String bookingId, String status, String message) async {
-    final url = 'http://stage.protto.in/api/shivangi/bookingstatus.php';
+    final url = 'http://api.protto.in/bookingstatus.php';
+    final storage = new FlutterSecureStorage();
+    String key = await storage.read(key: 'key');
+    String value = await storage.read(key: 'value');
+    String basicAuth = 'Basic ' + base64Encode(utf8.encode('$key:$value'));
     final response = await http.patch(url,
         body: json.encode({
           'booking_id': bookingId,
           'status': status,
-        }));
+        }),
+        headers: <String, String>{'Authorization': basicAuth});
     final extractedData = json.decode(response.body) as Map<String, dynamic>;
     if (extractedData['message'] == 'status not incremented') {
       throw HttpException(message);
@@ -202,9 +221,13 @@ class DeliveryOrders with ChangeNotifier {
   }
 
   Future<String> fetchBooking(String bookingId) async {
-    final url =
-        'http://stage.protto.in/api/shivangi/fetchbooking.php?booking_id=$bookingId';
-    final response = await http.get(url);
+    final url = 'http://api.protto.in/fetchbooking.php?booking_id=$bookingId';
+    final storage = new FlutterSecureStorage();
+    String key = await storage.read(key: 'key');
+    String value = await storage.read(key: 'value');
+    String basicAuth = 'Basic ' + base64Encode(utf8.encode('$key:$value'));
+    final response = await http
+        .get(url, headers: <String, String>{'Authorization': basicAuth});
     final extractedData = json.decode(response.body) as Map<String, dynamic>;
     _currentTotal = extractedData['data']['total'];
     _currentPaid = extractedData['data']['paid'];
@@ -250,7 +273,7 @@ class DeliveryOrders with ChangeNotifier {
     return extractedData['id'];
   }
 
-  Future<bool> verifyPayment(String paymentId) async {
+  Future<bool> verifyPayment(String paymentId, String bookingId) async {
     String username = 'rzp_test_rI34j5e3LyHywP';
     String password = 'eNnvy1APbAD1lnocgHX0yuQ0';
     String basicAuth =
@@ -265,6 +288,17 @@ class DeliveryOrders with ChangeNotifier {
     );
     final extractedData = json.decode(response.body) as Map<String, dynamic>;
     if (extractedData['status'] == 'paid') {
+      final url1 = 'http://api.protto.in/pidafter.php';
+      final storage = new FlutterSecureStorage();
+      String key = await storage.read(key: 'key');
+      String value = await storage.read(key: 'value');
+      String basicAuth = 'Basic ' + base64Encode(utf8.encode('$key:$value'));
+      await http.patch(url1,
+          body: json.encode({
+            'booking_id': bookingId,
+            'pid_after': extractedData['payment_id'],
+          }),
+          headers: <String, String>{'Authorization': basicAuth});
       return true;
     } else {
       return false;
@@ -273,8 +307,13 @@ class DeliveryOrders with ChangeNotifier {
 
   Future<void> getpreimages(String bookingId) async {
     final url =
-        'http://stage.protto.in/api/shivangi/getpreserviceinspection.php?booking_id=$bookingId';
-    final response = await http.get(url);
+        'http://api.protto.in/getpreserviceinspection.php?booking_id=$bookingId';
+    final storage = new FlutterSecureStorage();
+    String key = await storage.read(key: 'key');
+    String value = await storage.read(key: 'value');
+    String basicAuth = 'Basic ' + base64Encode(utf8.encode('$key:$value'));
+    final response = await http
+        .get(url, headers: <String, String>{'Authorization': basicAuth});
     final extractedData = json.decode(response.body) as Map<String, dynamic>;
     if (extractedData['data'] == null) {
       _preImages.clear();
@@ -297,8 +336,13 @@ class DeliveryOrders with ChangeNotifier {
 
   Future<void> getpostimages(String bookingId) async {
     final url =
-        'http://stage.protto.in/api/hitesh/getdeliveryinspection.php?booking_id=$bookingId';
-    final response = await http.get(url);
+        'http://api.protto.in/getdeliveryinspection.php?booking_id=$bookingId';
+    final storage = new FlutterSecureStorage();
+    String key = await storage.read(key: 'key');
+    String value = await storage.read(key: 'value');
+    String basicAuth = 'Basic ' + base64Encode(utf8.encode('$key:$value'));
+    final response = await http
+        .get(url, headers: <String, String>{'Authorization': basicAuth});
     final extractedData = json.decode(response.body) as Map<String, dynamic>;
     if (extractedData['data'] == null) {
       _postImages.clear();
@@ -326,8 +370,11 @@ class DeliveryOrders with ChangeNotifier {
     String preOdometer,
     double prerating,
   ) async {
-    final url =
-        'http://stage.protto.in/api/shivangi/addpreserviceinspection.php';
+    final url = 'http://api.protto.in/addpreserviceinspection.php';
+    final storage = new FlutterSecureStorage();
+    String key = await storage.read(key: 'key');
+    String value = await storage.read(key: 'value');
+    String basicAuth = 'Basic ' + base64Encode(utf8.encode('$key:$value'));
     await http.post(url,
         body: json.encode({
           'booking_id': bookingId,
@@ -339,7 +386,8 @@ class DeliveryOrders with ChangeNotifier {
           'number_pic': preImgUrl[5],
           'odometer_reading': preOdometer,
           'fuel_level': prerating,
-        }));
+        }),
+        headers: <String, String>{'Authorization': basicAuth});
   }
 
   Future<void> addpostimages(
@@ -348,7 +396,11 @@ class DeliveryOrders with ChangeNotifier {
     String postOdometer,
     double postrating,
   ) async {
-    final url = 'http://stage.protto.in/api/prina/adddeliveryinspection.php';
+    final url = 'http://api.protto.in/adddeliveryinspection.php';
+    final storage = new FlutterSecureStorage();
+    String key = await storage.read(key: 'key');
+    String value = await storage.read(key: 'value');
+    String basicAuth = 'Basic ' + base64Encode(utf8.encode('$key:$value'));
     await http.post(url,
         body: json.encode({
           'booking_id': bookingId,
@@ -360,16 +412,22 @@ class DeliveryOrders with ChangeNotifier {
           'number_pic': postImgUrl[5],
           'odometer_reading': postOdometer,
           'fuel_level': postrating,
-        }));
+        }),
+        headers: <String, String>{'Authorization': basicAuth});
   }
 
   Future<String> paymentreceived(String bookingId) async {
-    const url = 'http://stage.protto.in/api/shivangi/paymentreceived.php';
+    const url = 'http://api.protto.in/paymentreceived.php';
+    final storage = new FlutterSecureStorage();
+    String key = await storage.read(key: 'key');
+    String value = await storage.read(key: 'value');
+    String basicAuth = 'Basic ' + base64Encode(utf8.encode('$key:$value'));
     final response = await http.patch(url,
         body: json.encode({
           'booking_id': bookingId,
           'status': '8',
-        }));
+        }),
+        headers: <String, String>{'Authorization': basicAuth});
     final extractedData = json.decode(response.body) as Map<String, dynamic>;
     if (extractedData['message'] == 'payment approved') {
       _currentPaid = _currentTotal;
