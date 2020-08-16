@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:location/location.dart';
 import '../../providers/delivery_executive.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/delivery_orders.dart';
-//import '../../models/http_exception.dart';
 
 class DeliveryInfoScreen extends StatefulWidget {
   static const routeName = '/delivery-ex-info';
@@ -16,22 +13,10 @@ class DeliveryInfoScreen extends StatefulWidget {
 }
 
 class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
-  Location _location = new Location();
-  var _locationData;
-  bool _serviceEnabled;
-  PermissionStatus _permissionGranted;
   var _isInit = true;
   var _isLoading = true;
   var dueAmount;
   var status;
-
-  _launchURL(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
-    }
-  }
 
   Future<void> _refreshPage() async {
     status = await Provider.of<DeliveryOrders>(context, listen: false)
@@ -60,109 +45,6 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
     _isInit = false;
     super.didChangeDependencies();
   }
-
-  void _openMap(DeliveryOrderItem order) async {
-    _serviceEnabled = await _location.serviceEnabled();
-    if (!_serviceEnabled) {
-      _serviceEnabled = await _location.requestService();
-    }
-    if (!_serviceEnabled) {
-      return;
-    }
-    _permissionGranted = await _location.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
-      _permissionGranted = await _location.requestPermission();
-    }
-    if (_permissionGranted != PermissionStatus.granted) {
-      return;
-    }
-    _locationData = await _location.getLocation();
-    var url =
-        'https://www.google.com/maps/dir/?api=1&origin=${_locationData.latitude},${_locationData.longitude}&destination=${order.latitude},${order.longitude}&travelmode=driving&dir_action=navigate';
-    _launchURL(url);
-  }
-
-  // void _dropBikeToSS(String bookingId) async {
-  //   try {
-  //     await Provider.of<DeliveryOrders>(context, listen: false).incrementstatus(
-  //         bookingId, '3', 'Bike cannot be dropped to SS right now');
-  //     showDialog(
-  //       context: context,
-  //       builder: (ctx) {
-  //         return AlertDialog(
-  //           title: Text('Bike drop to Service Station approved!'),
-  //           actions: <Widget>[
-  //             FlatButton(
-  //               child: Text('Okay'),
-  //               onPressed: () {
-  //                 Navigator.of(ctx).pop();
-  //               },
-  //             ),
-  //           ],
-  //         );
-  //       },
-  //     );
-  //   } on HttpException catch (error) {
-  //     showDialog(
-  //       context: context,
-  //       builder: (ctx) {
-  //         return AlertDialog(
-  //           title: Text('Error occurred!'),
-  //           content: Text(error.message),
-  //           actions: <Widget>[
-  //             FlatButton(
-  //               child: Text('Okay'),
-  //               onPressed: () {
-  //                 Navigator.of(ctx).pop();
-  //               },
-  //             ),
-  //           ],
-  //         );
-  //       },
-  //     );
-  //   }
-  // }
-
-  // void _bikePickedFromSS(String bookingId) async {
-  //   try {
-  //     await Provider.of<DeliveryOrders>(context, listen: false).incrementstatus(
-  //         bookingId, '6', 'Bike cannot be picked from SS right now');
-  //     showDialog(
-  //       context: context,
-  //       builder: (ctx) {
-  //         return AlertDialog(
-  //           title: Text('Pick up bike from service station approved!'),
-  //           actions: <Widget>[
-  //             FlatButton(
-  //               child: Text('Okay'),
-  //               onPressed: () {
-  //                 Navigator.of(ctx).pop();
-  //               },
-  //             ),
-  //           ],
-  //         );
-  //       },
-  //     );
-  //   } on HttpException catch (error) {
-  //     showDialog(
-  //       context: context,
-  //       builder: (ctx) {
-  //         return AlertDialog(
-  //           title: Text('Error occurred!'),
-  //           content: Text(error.message),
-  //           actions: <Widget>[
-  //             FlatButton(
-  //               child: Text('Okay'),
-  //               onPressed: () {
-  //                 Navigator.of(ctx).pop();
-  //               },
-  //             ),
-  //           ],
-  //         );
-  //       },
-  //     );
-  //   }
-  // }
 
   Widget _otp(String otp) {
     return Container(
@@ -311,46 +193,26 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
                               ),
                             ),
                             SizedBox(height: 10),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Expanded(
-                                  flex: 9,
-                                  child: RichText(
-                                    text: TextSpan(
-                                      children: <TextSpan>[
-                                        TextSpan(
-                                          text: 'Address: ',
-                                          style: GoogleFonts.cantataOne(
-                                            color: Color.fromRGBO(
-                                                128, 128, 128, 1),
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text: order.landmark != ''
-                                              ? '${order.flat}, ${order.landmark}, ${order.address}'
-                                              : '${order.flat}, ${order.address}',
-                                          style: GoogleFonts.cantataOne(
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                      ],
+                            RichText(
+                              text: TextSpan(
+                                children: <TextSpan>[
+                                  TextSpan(
+                                    text: 'Address: ',
+                                    style: GoogleFonts.cantataOne(
+                                      color: Color.fromRGBO(128, 128, 128, 1),
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                ),
-                                Expanded(
-                                  flex: 1,
-                                  child: IconButton(
-                                    icon: Icon(
-                                      Icons.location_on,
+                                  TextSpan(
+                                    text: order.landmark != ''
+                                        ? '${order.flat}, ${order.landmark}, ${order.address}'
+                                        : '${order.flat}, ${order.address}',
+                                    style: GoogleFonts.cantataOne(
                                       color: Colors.grey,
                                     ),
-                                    onPressed: () => _openMap(order),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                             SizedBox(height: 4),
                             Row(
@@ -390,25 +252,6 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
                                 ),
                               ],
                             ),
-                            // SizedBox(height: 4),
-                            // Row(
-                            //   children: <Widget>[
-                            //     Text(
-                            //       'Del. Ex:',
-                            //       style: GoogleFonts.cantataOne(
-                            //         color: Color.fromRGBO(128, 128, 128, 1),
-                            //         fontWeight: FontWeight.bold,
-                            //       ),
-                            //     ),
-                            //     SizedBox(width: 8),
-                            //     Text(
-                            //       'Delivery Ex. Name',
-                            //       style: GoogleFonts.cantataOne(
-                            //         color: Colors.grey,
-                            //       ),
-                            //     ),
-                            //   ],
-                            // ),
                             SizedBox(height: 4),
                             Row(
                               children: <Widget>[
@@ -441,23 +284,6 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
                       ),
                       SizedBox(height: 10),
                       _otp(otp),
-                      // SizedBox(height: 10),
-                      // Padding(
-                      //   padding: EdgeInsets.symmetric(horizontal: 24),
-                      //   child: Container(
-                      //     width: double.infinity,
-                      //     height: 40,
-                      //     decoration: BoxDecoration(
-                      //       border: Border.all(color: Colors.deepOrange),
-                      //     ),
-                      //     child: RaisedButton(
-                      //       child: Text('Dropped To SS'),
-                      //       color: Colors.white,
-                      //       elevation: 0,
-                      //       onPressed: () => _dropBikeToSS(order.bookingId),
-                      //     ),
-                      //   ),
-                      // ),
                       SizedBox(height: 20),
                       Container(
                         width: double.infinity,
@@ -473,67 +299,30 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
                               ),
                             ),
                             SizedBox(height: 10),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Expanded(
-                                  flex: 9,
-                                  child: RichText(
-                                    text: TextSpan(
-                                      children: <TextSpan>[
-                                        TextSpan(
-                                          text: 'Address: ',
-                                          style: GoogleFonts.cantataOne(
-                                            color: Color.fromRGBO(
-                                                128, 128, 128, 1),
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text: order.landmark != ''
-                                              ? '${order.flat}, ${order.landmark}, ${order.address}'
-                                              : '${order.flat}, ${order.address}',
-                                          style: GoogleFonts.cantataOne(
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                      ],
+                            RichText(
+                              text: TextSpan(
+                                children: <TextSpan>[
+                                  TextSpan(
+                                    text: 'Address: ',
+                                    style: GoogleFonts.cantataOne(
+                                      color: Color.fromRGBO(128, 128, 128, 1),
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                ),
-                                Expanded(
-                                  flex: 1,
-                                  child: IconButton(
-                                    icon: Icon(
-                                      Icons.location_on,
+                                  TextSpan(
+                                    text: order.landmark != ''
+                                        ? '${order.flat}, ${order.landmark}, ${order.address}'
+                                        : '${order.flat}, ${order.address}',
+                                    style: GoogleFonts.cantataOne(
                                       color: Colors.grey,
                                     ),
-                                    onPressed: () => _openMap(order),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ],
                         ),
                       ),
-                      // SizedBox(height: 10),
-                      // Padding(
-                      //   padding: EdgeInsets.symmetric(horizontal: 24),
-                      //   child: Container(
-                      //     width: double.infinity,
-                      //     height: 40,
-                      //     decoration: BoxDecoration(
-                      //       border: Border.all(color: Colors.deepOrange),
-                      //     ),
-                      //     child: RaisedButton(
-                      //       child: Text('Picked From SS'),
-                      //       color: Colors.white,
-                      //       elevation: 0,
-                      //       onPressed: () => _bikePickedFromSS(order.bookingId),
-                      //     ),
-                      //   ),
-                      // ),
                       SizedBox(height: 20),
                       dueAmount == 0.0 && int.parse(status) >= 7
                           ? Text(

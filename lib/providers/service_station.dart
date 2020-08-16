@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../models/http_exception.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ServiceStationUser with ChangeNotifier {
   final String id;
@@ -88,7 +89,11 @@ class ServiceStation with ChangeNotifier {
   }
 
   Future<void> addExecutive(DeliveryExecutiveUser executive) async {
-    final url = 'http://stage.protto.in/api/hitesh/adddeliveryex.php';
+    final url = 'http://api.protto.in/adddeliveryex1.php';
+    final storage = new FlutterSecureStorage();
+    String key = await storage.read(key: 'key');
+    String value = await storage.read(key: 'value');
+    String basicAuth = 'Basic ' + base64Encode(utf8.encode('$key:$value'));
     await http.post(url,
         body: json.encode({
           'ss_code': item1.ssCode,
@@ -98,14 +103,19 @@ class ServiceStation with ChangeNotifier {
           'de_phone': executive.mobile,
           'de_id_proof': executive.aadhar,
           'de_passcode': executive.password,
-        }));
+        }),
+        headers: <String, String>{'Authorization': basicAuth});
     _item2.add(executive);
     notifyListeners();
   }
 
   Future<void> updateExecutive(
       String id, DeliveryExecutiveUser executive) async {
-    final url = 'http://stage.protto.in/api/prina/editdeliveryex.php';
+    final url = 'http://api.protto.in/editdeliveryex.php';
+    final storage = new FlutterSecureStorage();
+    String key = await storage.read(key: 'key');
+    String value = await storage.read(key: 'value');
+    String basicAuth = 'Basic ' + base64Encode(utf8.encode('$key:$value'));
     await http.patch(url,
         body: json.encode({
           'de_id': id,
@@ -114,7 +124,8 @@ class ServiceStation with ChangeNotifier {
           'de_phone': executive.mobile,
           'de_id_proof': executive.aadhar,
           'de_passcode': executive.password,
-        }));
+        }),
+        headers: <String, String>{'Authorization': basicAuth});
     final exIndex = _item2.indexWhere((ex) => ex.id == id);
     if (exIndex >= 0) {
       _item2[exIndex] = executive;
@@ -124,8 +135,13 @@ class ServiceStation with ChangeNotifier {
 
   Future<void> getDeliveryExecutives() async {
     final url =
-        'http://stage.protto.in/api/hitesh/getdeliveryexSS.php?ss_code=${item1.ssCode}';
-    final response = await http.get(url);
+        'http://api.protto.in/getdeliveryexSS.php?ss_code=${item1.ssCode}';
+    final storage = new FlutterSecureStorage();
+    String key = await storage.read(key: 'key');
+    String value = await storage.read(key: 'value');
+    String basicAuth = 'Basic ' + base64Encode(utf8.encode('$key:$value'));
+    final response = await http
+        .get(url, headers: <String, String>{'Authorization': basicAuth});
     final extractedData = json.decode(response.body) as Map<String, dynamic>;
     if (extractedData['count'] != '0') {
       List<DeliveryExecutiveUser> data = [];
@@ -171,8 +187,13 @@ class ServiceStation with ChangeNotifier {
   Future<void> loginServiceStation(
       String name, String code, String password) async {
     final url =
-        'http://stage.protto.in/api/prina/servicestation.php?name=$name&code=$code&password=$password';
-    final response = await http.get(url);
+        'http://api.protto.in/servicestation.php?name=$name&code=$code&password=$password';
+    final storage = new FlutterSecureStorage();
+    String key = await storage.read(key: 'key');
+    String value = await storage.read(key: 'value');
+    String basicAuth = 'Basic ' + base64Encode(utf8.encode('$key:$value'));
+    final response = await http
+        .get(url, headers: <String, String>{'Authorization': basicAuth});
     final extractedData = json.decode(response.body) as Map<String, dynamic>;
     if (extractedData['message'] == 'User does not exist') {
       throw HttpException('Invalid service station code');
@@ -212,9 +233,14 @@ class ServiceStation with ChangeNotifier {
     }
     final extractedUserData =
         json.decode(prefs.getString('serviceData')) as Map<String, Object>;
-    var url =
-        'http://stage.protto.in/api/prina/servicestation.php?name=${extractedUserData['name']}&code=${extractedUserData['code']}&password=${extractedUserData['password']}';
-    final response = await http.get(url);
+    final url =
+        'http://api.protto.in/servicestation.php?name=${extractedUserData['name']}&code=${extractedUserData['code']}&password=${extractedUserData['password']}';
+    final storage = new FlutterSecureStorage();
+    String key = await storage.read(key: 'key');
+    String value = await storage.read(key: 'value');
+    String basicAuth = 'Basic ' + base64Encode(utf8.encode('$key:$value'));
+    final response = await http
+        .get(url, headers: <String, String>{'Authorization': basicAuth});
     final extractedData = json.decode(response.body) as Map<String, dynamic>;
     _item1 = ServiceStationUser(
       id: extractedData['Data']['ss_id'],

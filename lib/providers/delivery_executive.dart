@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../models/http_exception.dart';
 
@@ -56,8 +57,13 @@ class DeliveryExecutive with ChangeNotifier {
 
   Future<void> loginDeliveryExecutive(String name, String password) async {
     final url =
-        'http://stage.protto.in/api/hitesh/deliveryex.php?de_name=$name&de_passcode=$password';
-    final response = await http.get(url);
+        'http://api.protto.in/deliveryex.php?de_name=$name&de_passcode=$password';
+    final storage = new FlutterSecureStorage();
+    String key = await storage.read(key: 'key');
+    String value = await storage.read(key: 'value');
+    String basicAuth = 'Basic ' + base64Encode(utf8.encode('$key:$value'));
+    final response = await http
+        .get(url, headers: <String, String>{'Authorization': basicAuth});
     final extractedData = json.decode(response.body) as Map<String, dynamic>;
     if (extractedData['message'] == 'User does not exists') {
       throw HttpException('Invalid Credentials');
@@ -94,8 +100,13 @@ class DeliveryExecutive with ChangeNotifier {
     final extractedUserData =
         json.decode(prefs.getString('serviceData')) as Map<String, Object>;
     var url =
-        'http://stage.protto.in/api/hitesh/deliveryex.php?de_name=${extractedUserData['name']}&de_passcode=${extractedUserData['password']}';
-    final response = await http.get(url);
+        'http://api.protto.in/deliveryex.php?de_name=${extractedUserData['name']}&de_passcode=${extractedUserData['password']}';
+    final storage = new FlutterSecureStorage();
+    String key = await storage.read(key: 'key');
+    String value = await storage.read(key: 'value');
+    String basicAuth = 'Basic ' + base64Encode(utf8.encode('$key:$value'));
+    final response = await http
+        .get(url, headers: <String, String>{'Authorization': basicAuth});
     final extractedData = json.decode(response.body) as Map<String, dynamic>;
     _item = DeliveryExecutiveUser(
       id: extractedData['data']['de_id'],

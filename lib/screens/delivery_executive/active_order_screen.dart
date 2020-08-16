@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:location/location.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../models/http_exception.dart';
 import '../../providers/delivery_orders.dart';
@@ -34,108 +36,179 @@ class ActiveOrderScreen extends StatefulWidget {
 }
 
 class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
+  Location _location = new Location();
+  var _locationData;
+  bool _serviceEnabled;
+  PermissionStatus _permissionGranted;
+
   void _dropBikeToSS(String bookingId) async {
-    try {
-      await Provider.of<DeliveryOrders>(context, listen: false).incrementstatus(
-          bookingId, '3', 'Bike cannot be dropped to SS right now');
-      showDialog(
-        context: context,
-        builder: (ctx) {
-          return AlertDialog(
-            title: Text('Bike drop to Service Station approved!'),
-            actions: <Widget>[
-              FlatButton(
-                child: Text('Okay'),
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
-    } on HttpException catch (error) {
-      showDialog(
-        context: context,
-        builder: (ctx) {
-          return AlertDialog(
-            title: Text('Error occurred!'),
-            content: Text(error.message),
-            actions: <Widget>[
-              FlatButton(
-                child: Text('Okay'),
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
-    }
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title: Text('Are you sure?'),
+          content: Text('Have you dropped off the bike to SS?'),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('Yes'),
+              onPressed: () async {
+                Navigator.of(ctx).pop();
+                try {
+                  await Provider.of<DeliveryOrders>(context, listen: false)
+                      .incrementstatus(bookingId, '3',
+                          'Bike cannot be dropped to SS right now');
+                  showDialog(
+                    context: context,
+                    builder: (ctx1) {
+                      return AlertDialog(
+                        title: Text('Bike drop to Service Station approved!'),
+                        actions: <Widget>[
+                          FlatButton(
+                            child: Text('Okay'),
+                            onPressed: () {
+                              Navigator.of(ctx1).pop();
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                } on HttpException catch (error) {
+                  showDialog(
+                    context: context,
+                    builder: (ctx) {
+                      return AlertDialog(
+                        title: Text('Error occurred!'),
+                        content: Text(error.message),
+                        actions: <Widget>[
+                          FlatButton(
+                            child: Text('Okay'),
+                            onPressed: () {
+                              Navigator.of(ctx).pop();
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }
+              },
+            ),
+            FlatButton(
+              child: Text('No'),
+              onPressed: () {
+                Navigator.of(ctx).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _bikePickedFromSS(String bookingId) async {
-    try {
-      await Provider.of<DeliveryOrders>(context, listen: false).incrementstatus(
-          bookingId, '6', 'Bike cannot be picked from SS right now');
-      showDialog(
-        context: context,
-        builder: (ctx) {
-          return AlertDialog(
-            title: Text('Pick up bike from service station approved!'),
-            actions: <Widget>[
-              FlatButton(
-                child: Text('Okay'),
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
-    } on HttpException catch (error) {
-      showDialog(
-        context: context,
-        builder: (ctx) {
-          return AlertDialog(
-            title: Text('Error occurred!'),
-            content: Text(error.message),
-            actions: <Widget>[
-              FlatButton(
-                child: Text('Okay'),
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title: Text('Are you sure?'),
+          content: Text('Have you picked up the bike from customer?'),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('Yes'),
+              onPressed: () async {
+                Navigator.of(ctx).pop();
+                try {
+                  await Provider.of<DeliveryOrders>(context, listen: false)
+                      .incrementstatus(bookingId, '6',
+                          'Bike cannot be picked from SS right now');
+                  showDialog(
+                    context: context,
+                    builder: (ctx1) {
+                      return AlertDialog(
+                        title:
+                            Text('Pick up bike from service station approved!'),
+                        actions: <Widget>[
+                          FlatButton(
+                            child: Text('Okay'),
+                            onPressed: () {
+                              Navigator.of(ctx1).pop();
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                } on HttpException catch (error) {
+                  showDialog(
+                    context: context,
+                    builder: (ctx) {
+                      return AlertDialog(
+                        title: Text('Error occurred!'),
+                        content: Text(error.message),
+                        actions: <Widget>[
+                          FlatButton(
+                            child: Text('Okay'),
+                            onPressed: () {
+                              Navigator.of(ctx).pop();
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }
+              },
+            ),
+            FlatButton(
+              child: Text('No'),
+              onPressed: () {
+                Navigator.of(ctx).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  _launchURL(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
     }
+  }
+
+  void _openMap(DeliveryOrderItem order) async {
+    _serviceEnabled = await _location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await _location.requestService();
+    }
+    if (!_serviceEnabled) {
+      return;
+    }
+    _permissionGranted = await _location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await _location.requestPermission();
+    }
+    if (_permissionGranted != PermissionStatus.granted) {
+      return;
+    }
+    _locationData = await _location.getLocation();
+    var url =
+        'https://www.google.com/maps/dir/?api=1&origin=${_locationData.latitude},${_locationData.longitude}&destination=${order.latitude},${order.longitude}&travelmode=driving&dir_action=navigate';
+    _launchURL(url);
   }
 
   List<SampleStepTile> get steps {
     return [
       SampleStepTile(
-        title: Text(
-          'Service Confirmed',
-          textAlign: TextAlign.left,
-          style: TextStyle(
-            color: Color(0xff707070),
-            fontFamily: 'SourceSansPro',
-          ),
-        ),
-        date: widget.order.date,
-        time: widget.order.time,
-      ),
-      SampleStepTile(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
+          children: [
             Text(
-              'Inspection',
+              'Service Confirmed',
               textAlign: TextAlign.left,
               style: TextStyle(
                 color: Color(0xff707070),
@@ -164,19 +237,69 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
               child: FlatButton(
                 color: Color.fromRGBO(250, 250, 250, 1),
                 child: Text(
-                  'Click Images',
+                  'Location',
                   style: TextStyle(
                     fontFamily: 'SourceSansProSB',
                     color: Color.fromRGBO(112, 112, 112, 0.7),
                   ),
                 ),
-                onPressed: () {
-                  Navigator.of(context).pushNamed(
-                      InspectionImagesScreen.routeName,
-                      arguments: widget.order);
-                },
+                onPressed: () => _openMap(widget.order),
               ),
             ),
+          ],
+        ),
+        date: widget.order.date,
+        time: widget.order.time,
+      ),
+      SampleStepTile(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              'Inspection',
+              textAlign: TextAlign.left,
+              style: TextStyle(
+                color: Color(0xff707070),
+                fontFamily: 'SourceSansPro',
+              ),
+            ),
+            SizedBox(height: 10),
+            int.parse(widget.order.status) >= 2
+                ? Container()
+                : Container(
+                    width: MediaQuery.of(context).size.width * 0.35,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Theme.of(context).primaryColor,
+                        width: 1.2,
+                      ),
+                      borderRadius: BorderRadius.circular(4.0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey[400],
+                          spreadRadius: 0.0,
+                          offset: Offset(2.0, 2.0), //(x,y)
+                          blurRadius: 4.0,
+                        ),
+                      ],
+                    ),
+                    child: FlatButton(
+                      color: Color.fromRGBO(250, 250, 250, 1),
+                      child: Text(
+                        'Click Images',
+                        style: TextStyle(
+                          fontFamily: 'SourceSansProSB',
+                          color: Color.fromRGBO(112, 112, 112, 0.7),
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pushNamed(
+                            InspectionImagesScreen.routeName,
+                            arguments: widget.order);
+                      },
+                    ),
+                  ),
           ],
         ),
         date: widget.order.date,
@@ -194,39 +317,43 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
               ),
             ),
             SizedBox(height: 10),
-            Container(
-              width: MediaQuery.of(context).size.width * 0.35,
-              height: 30,
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: Theme.of(context).primaryColor,
-                  width: 1.2,
-                ),
-                borderRadius: BorderRadius.circular(4.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey[400],
-                    spreadRadius: 0.0,
-                    offset: Offset(2.0, 2.0), //(x,y)
-                    blurRadius: 4.0,
+            int.parse(widget.order.status) >= 3
+                ? Container()
+                : Container(
+                    width: MediaQuery.of(context).size.width * 0.35,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Theme.of(context).primaryColor,
+                        width: 1.2,
+                      ),
+                      borderRadius: BorderRadius.circular(4.0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey[400],
+                          spreadRadius: 0.0,
+                          offset: Offset(2.0, 2.0), //(x,y)
+                          blurRadius: 4.0,
+                        ),
+                      ],
+                    ),
+                    child: FlatButton(
+                      color: Color.fromRGBO(250, 250, 250, 1),
+                      child: Text(
+                        'OTP',
+                        style: TextStyle(
+                          fontFamily: 'SourcsSansProSB',
+                          color: Color.fromRGBO(112, 112, 112, 0.7),
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pushNamed(
+                          DeliveryInfoScreen.routeName,
+                          arguments: widget.order,
+                        );
+                      },
+                    ),
                   ),
-                ],
-              ),
-              child: FlatButton(
-                color: Color.fromRGBO(250, 250, 250, 1),
-                child: Text(
-                  'OTP',
-                  style: TextStyle(
-                    fontFamily: 'SourcsSansProSB',
-                    color: Color.fromRGBO(112, 112, 112, 0.7),
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.of(context).pushNamed(DeliveryInfoScreen.routeName,
-                      arguments: widget.order);
-                },
-              ),
-            ),
           ],
         ),
         date: widget.order.date,
@@ -244,38 +371,40 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
               ),
             ),
             SizedBox(height: 10),
-            Container(
-              width: MediaQuery.of(context).size.width * 0.35,
-              height: 30,
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: Theme.of(context).primaryColor,
-                  width: 1.2,
-                ),
-                borderRadius: BorderRadius.circular(4.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey[400],
-                    spreadRadius: 0.0,
-                    offset: Offset(2.0, 2.0), //(x,y)
-                    blurRadius: 4.0,
+            int.parse(widget.order.status) >= 4
+                ? Container()
+                : Container(
+                    width: MediaQuery.of(context).size.width * 0.35,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Theme.of(context).primaryColor,
+                        width: 1.2,
+                      ),
+                      borderRadius: BorderRadius.circular(4.0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey[400],
+                          spreadRadius: 0.0,
+                          offset: Offset(2.0, 2.0), //(x,y)
+                          blurRadius: 4.0,
+                        ),
+                      ],
+                    ),
+                    child: FlatButton(
+                      color: Color.fromRGBO(250, 250, 250, 1),
+                      child: Text(
+                        'Dropped Off',
+                        style: TextStyle(
+                          fontFamily: 'SourcsSansProSB',
+                          color: Color.fromRGBO(112, 112, 112, 0.7),
+                        ),
+                      ),
+                      onPressed: () {
+                        _dropBikeToSS(widget.order.bookingId);
+                      },
+                    ),
                   ),
-                ],
-              ),
-              child: FlatButton(
-                color: Color.fromRGBO(250, 250, 250, 1),
-                child: Text(
-                  'Dropped Off',
-                  style: TextStyle(
-                    fontFamily: 'SourcsSansProSB',
-                    color: Color.fromRGBO(112, 112, 112, 0.7),
-                  ),
-                ),
-                onPressed: () {
-                  _dropBikeToSS(widget.order.bookingId);
-                },
-              ),
-            ),
           ],
         ),
         date: widget.order.date,
@@ -310,13 +439,48 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
-              'Bike Picked from Service Station',
+              'Picked from SS',
               style: TextStyle(
                 color: Color(0xff707070),
                 fontFamily: 'SourceSansPro',
               ),
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 5),
+            int.parse(widget.order.status) >= 7
+                ? Container()
+                : Container(
+                    width: MediaQuery.of(context).size.width * 0.35,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Theme.of(context).primaryColor,
+                        width: 1.2,
+                      ),
+                      borderRadius: BorderRadius.circular(4.0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey[400],
+                          spreadRadius: 0.0,
+                          offset: Offset(2.0, 2.0), //(x,y)
+                          blurRadius: 4.0,
+                        ),
+                      ],
+                    ),
+                    child: FlatButton(
+                      color: Color.fromRGBO(250, 250, 250, 1),
+                      child: Text(
+                        'Picked Up',
+                        style: TextStyle(
+                          fontFamily: 'SourcsSansProSB',
+                          color: Color.fromRGBO(112, 112, 112, 0.7),
+                        ),
+                      ),
+                      onPressed: () {
+                        _bikePickedFromSS(widget.order.bookingId);
+                      },
+                    ),
+                  ),
+            SizedBox(height: 5),
             Container(
               width: MediaQuery.of(context).size.width * 0.35,
               height: 30,
@@ -338,15 +502,13 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
               child: FlatButton(
                 color: Color.fromRGBO(250, 250, 250, 1),
                 child: Text(
-                  'Picked Up',
+                  'Location',
                   style: TextStyle(
                     fontFamily: 'SourcsSansProSB',
                     color: Color.fromRGBO(112, 112, 112, 0.7),
                   ),
                 ),
-                onPressed: () {
-                  _bikePickedFromSS(widget.order.bookingId);
-                },
+                onPressed: () => _openMap(widget.order),
               ),
             ),
           ],
@@ -367,74 +529,79 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
               ),
             ),
             SizedBox(height: 5),
-            Container(
-              width: MediaQuery.of(context).size.width * 0.35,
-              height: 30,
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: Theme.of(context).primaryColor,
-                  width: 1.2,
-                ),
-                borderRadius: BorderRadius.circular(4.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey[400],
-                    spreadRadius: 0.0,
-                    offset: Offset(2.0, 2.0), //(x,y)
-                    blurRadius: 4.0,
+            int.parse(widget.order.status) >= 8
+                ? Container()
+                : Container(
+                    width: MediaQuery.of(context).size.width * 0.35,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Theme.of(context).primaryColor,
+                        width: 1.2,
+                      ),
+                      borderRadius: BorderRadius.circular(4.0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey[400],
+                          spreadRadius: 0.0,
+                          offset: Offset(2.0, 2.0), //(x,y)
+                          blurRadius: 4.0,
+                        ),
+                      ],
+                    ),
+                    child: FlatButton(
+                      color: Color.fromRGBO(250, 250, 250, 1),
+                      child: Text(
+                        'Click Images',
+                        style: TextStyle(
+                          fontFamily: 'SourceSansProSB',
+                          color: Color.fromRGBO(112, 112, 112, 0.7),
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pushNamed(
+                            InspectionImagesScreen.routeName,
+                            arguments: widget.order);
+                      },
+                    ),
                   ),
-                ],
-              ),
-              child: FlatButton(
-                color: Color.fromRGBO(250, 250, 250, 1),
-                child: Text(
-                  'Click Images',
-                  style: TextStyle(
-                    fontFamily: 'SourceSansProSB',
-                    color: Color.fromRGBO(112, 112, 112, 0.7),
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.of(context).pushNamed(
-                      InspectionImagesScreen.routeName,
-                      arguments: widget.order);
-                },
-              ),
-            ),
             SizedBox(height: 5),
-            Container(
-              width: MediaQuery.of(context).size.width * 0.35,
-              height: 30,
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: Theme.of(context).primaryColor,
-                  width: 1.2,
-                ),
-                borderRadius: BorderRadius.circular(4.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey[400],
-                    spreadRadius: 0.0,
-                    offset: Offset(2.0, 2.0), //(x,y)
-                    blurRadius: 4.0,
+            int.parse(widget.order.status) >= 9
+                ? Container()
+                : Container(
+                    width: MediaQuery.of(context).size.width * 0.35,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Theme.of(context).primaryColor,
+                        width: 1.2,
+                      ),
+                      borderRadius: BorderRadius.circular(4.0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey[400],
+                          spreadRadius: 0.0,
+                          offset: Offset(2.0, 2.0), //(x,y)
+                          blurRadius: 4.0,
+                        ),
+                      ],
+                    ),
+                    child: FlatButton(
+                      color: Color.fromRGBO(250, 250, 250, 1),
+                      child: Text(
+                        'Payment',
+                        style: TextStyle(
+                          fontFamily: 'SourceSansProSB',
+                          color: Color.fromRGBO(112, 112, 112, 0.7),
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pushNamed(
+                            PaymentsScreen.routeName,
+                            arguments: widget.order);
+                      },
+                    ),
                   ),
-                ],
-              ),
-              child: FlatButton(
-                color: Color.fromRGBO(250, 250, 250, 1),
-                child: Text(
-                  'Payment',
-                  style: TextStyle(
-                    fontFamily: 'SourceSansProSB',
-                    color: Color.fromRGBO(112, 112, 112, 0.7),
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.of(context).pushNamed(PaymentsScreen.routeName,
-                      arguments: widget.order);
-                },
-              ),
-            ),
           ],
         ),
         date: widget.order.date,
@@ -452,39 +619,43 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
               ),
             ),
             SizedBox(height: 10),
-            Container(
-              width: MediaQuery.of(context).size.width * 0.35,
-              height: 30,
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: Theme.of(context).primaryColor,
-                  width: 1.2,
-                ),
-                borderRadius: BorderRadius.circular(4.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey[400],
-                    spreadRadius: 0.0,
-                    offset: Offset(2.0, 2.0), //(x,y)
-                    blurRadius: 4.0,
+            int.parse(widget.order.status) >= 9
+                ? Container()
+                : Container(
+                    width: MediaQuery.of(context).size.width * 0.35,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Theme.of(context).primaryColor,
+                        width: 1.2,
+                      ),
+                      borderRadius: BorderRadius.circular(4.0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey[400],
+                          spreadRadius: 0.0,
+                          offset: Offset(2.0, 2.0), //(x,y)
+                          blurRadius: 4.0,
+                        ),
+                      ],
+                    ),
+                    child: FlatButton(
+                      color: Color.fromRGBO(250, 250, 250, 1),
+                      child: Text(
+                        'OTP',
+                        style: TextStyle(
+                          fontFamily: 'SourcsSansProSB',
+                          color: Color.fromRGBO(112, 112, 112, 0.7),
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pushNamed(
+                          DeliveryInfoScreen.routeName,
+                          arguments: widget.order,
+                        );
+                      },
+                    ),
                   ),
-                ],
-              ),
-              child: FlatButton(
-                color: Color.fromRGBO(250, 250, 250, 1),
-                child: Text(
-                  'OTP',
-                  style: TextStyle(
-                    fontFamily: 'SourcsSansProSB',
-                    color: Color.fromRGBO(112, 112, 112, 0.7),
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.of(context).pushNamed(DeliveryInfoScreen.routeName,
-                      arguments: widget.order);
-                },
-              ),
-            ),
           ],
         ),
         date: widget.order.date,
@@ -575,7 +746,7 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
                       ),
                       child: RaisedButton(
                         child: Text(
-                          'ViewImages',
+                          'View Images',
                           style: TextStyle(
                             fontFamily: 'SourceSansProSB',
                             color: Colors.white,
