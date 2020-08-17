@@ -78,7 +78,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
                             value: orders[i],
                             child: ServiceActiveOrderDetail(),
                           ),
-                          SizedBox(height: 15),
+                          SizedBox(height: 8),
                         ],
                       ),
                       itemCount: orders.length,

@@ -117,7 +117,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
                             children: <Widget>[
                               ChangeNotifierProvider.value(
                                 value: orders[i],
-                                child: DeliveryActiveOrderDetail(),
+                                child: DeliveryActiveOrderDetail(i),
                               ),
                               SizedBox(height: 15),
                             ],

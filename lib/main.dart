@@ -10,7 +10,6 @@ import './screens/welcome_screen.dart';
 import './screens/delivery_executive/login_screen.dart';
 import './screens/service_station/bookings_screen.dart' as Bookings;
 import './screens/delivery_executive/bookings_screen.dart';
-import './screens/delivery_executive/menu_screen.dart';
 import './screens/delivery_executive/payments_screen.dart';
 import './screens/delivery_executive/delivery_info_screen.dart';
 import './screens/delivery_executive/inspection_images_screen.dart';
@@ -19,6 +18,7 @@ import './screens/service_station/login_screen.dart' as Login;
 import './screens/service_station/menu_screen.dart' as Menu;
 import './screens/service_station/order_menu_screen.dart';
 import './screens/delivery_executive/active_order_screen.dart';
+import './screens/delivery_executive/edit_regno_screen.dart';
 import './screens/service_station/delivery_info_screen.dart' as DeliveryInfo;
 import './screens/service_station/jobs_screen.dart';
 import './screens/service_station/partner_details_screen.dart';
@@ -51,8 +51,8 @@ class _MyAppState extends State<MyApp> {
     LoginScreen.routeName: (ctx) => LoginScreen(),
     Bookings.BookingsScreen.routeName: (ctx) => Bookings.BookingsScreen(),
     BookingsScreen.routeName: (ctx) => BookingsScreen(),
-    MenuScreen.routeName: (ctx) => MenuScreen(),
     DeliveryInfoScreen.routeName: (ctx) => DeliveryInfoScreen(),
+    EditRegnoScreen.routeName: (ctx) => EditRegnoScreen(),
     PaymentsScreen.routeName: (ctx) => PaymentsScreen(),
     InspectionImagesScreen.routeName: (ctx) => InspectionImagesScreen(),
     DisplayInspectionImagesScreen.routeName: (ctx) =>
@@ -77,6 +77,8 @@ class _MyAppState extends State<MyApp> {
     if (_isInit) {
       await storage.write(key: 'key', value: 'apikey');
       await storage.write(key: 'value', value: 'proflutter');
+      await storage.write(key: 'username', value: 'rzp_test_rI34j5e3LyHywP');
+      await storage.write(key: 'password', value: 'eNnvy1APbAD1lnocgHX0yuQ0');
       setState(() {
         _isLoading = true;
       });
