@@ -7,6 +7,9 @@ import '../screens/delivery_executive/active_order_screen.dart';
 import '../providers/delivery_orders.dart';
 
 class DeliveryActiveOrderDetail extends StatelessWidget {
+  final int i;
+  DeliveryActiveOrderDetail(this.i);
+
   String _getStatus(DeliveryOrderItem order) {
     if (order.status == '1' || order.status == '2') {
       return 'Service Confirmed';
@@ -29,13 +32,11 @@ class DeliveryActiveOrderDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final order = Provider.of<DeliveryOrderItem>(context, listen: false);
+    var order = Provider.of<DeliveryOrders>(context).items[i];
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: InkWell(
         onTap: () {
-          // Navigator.of(context)
-          //     .pushNamed(MenuScreen.routeName, arguments: order);
           Navigator.of(context).push(
               MaterialPageRoute(builder: (ctx) => ActiveOrderScreen(order)));
         },
@@ -106,165 +107,150 @@ class DeliveryActiveOrderDetail extends StatelessWidget {
                   ],
                 ),
                 SizedBox(height: 8),
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      flex: 14,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            Row(
-                              children: <Widget>[
-                                Text(
-                                  'Status:',
-                                  style: TextStyle(
-                                    fontFamily: 'SourceSansPro',
-                                    color: Color.fromRGBO(128, 128, 128, 1),
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                SizedBox(width: 8),
-                                Text(
-                                  _getStatus(order),
-                                  style: TextStyle(
-                                    fontFamily: 'SourceSansPro',
-                                    color: Theme.of(context).primaryColor,
-                                    fontSize: 15,
-                                  ),
-                                ),
-                              ],
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Row(
+                        children: <Widget>[
+                          Text(
+                            'Status:',
+                            style: TextStyle(
+                              fontFamily: 'SourceSansPro',
+                              color: Color.fromRGBO(128, 128, 128, 1),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
                             ),
-                            SizedBox(height: 4),
-                            Container(
-                              width: double.infinity,
-                              child: RichText(
-                                text: TextSpan(
-                                  children: <TextSpan>[
-                                    TextSpan(
-                                      text: 'Bike: ',
-                                      style: GoogleFonts.cantataOne(
-                                        color: Color.fromRGBO(128, 128, 128, 1),
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                    TextSpan(
-                                      text: '${order.make} ${order.model}',
-                                      style: GoogleFonts.cantataOne(
-                                        color: Colors.grey,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ],
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            _getStatus(order),
+                            style: TextStyle(
+                              fontFamily: 'SourceSansPro',
+                              color: Theme.of(context).primaryColor,
+                              fontSize: 15,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 4),
+                      Container(
+                        width: double.infinity,
+                        child: RichText(
+                          text: TextSpan(
+                            children: <TextSpan>[
+                              TextSpan(
+                                text: 'Bike: ',
+                                style: GoogleFonts.cantataOne(
+                                  color: Color.fromRGBO(128, 128, 128, 1),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
                                 ),
                               ),
-                            ),
-                            SizedBox(height: 4),
-                            Row(
-                              children: <Widget>[
-                                Text(
-                                  'Booking ID:',
-                                  style: GoogleFonts.cantataOne(
-                                    color: Color.fromRGBO(128, 128, 128, 1),
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                                SizedBox(width: 8),
-                                Text(
-                                  order.bookingId,
-                                  style: GoogleFonts.cantataOne(
-                                    color: Colors.grey,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 4),
-                            Row(
-                              children: <Widget>[
-                                Text(
-                                  'Pickup Date:',
-                                  style: GoogleFonts.cantataOne(
-                                    color: Color.fromRGBO(128, 128, 128, 1),
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                                SizedBox(width: 8),
-                                Text(
-                                  order.date,
-                                  style: GoogleFonts.cantataOne(
-                                    color: Colors.grey,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 4),
-                            Row(
-                              children: <Widget>[
-                                Text(
-                                  'Pickup Time:',
-                                  style: GoogleFonts.cantataOne(
-                                    color: Color.fromRGBO(128, 128, 128, 1),
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                                SizedBox(width: 8),
-                                Text(
-                                  order.time,
-                                  style: GoogleFonts.cantataOne(
-                                    color: Colors.grey,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 4),
-                            Container(
-                              width: double.infinity,
-                              child: RichText(
-                                text: TextSpan(
-                                  children: <TextSpan>[
-                                    TextSpan(
-                                      text: 'PickupAddress: ',
-                                      style: GoogleFonts.cantataOne(
-                                        color: Color.fromRGBO(128, 128, 128, 1),
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                    TextSpan(
-                                      text: '${order.flat}, ${order.address}',
-                                      style: GoogleFonts.cantataOne(
-                                        color: Colors.grey,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ],
+                              TextSpan(
+                                text: '${order.make} ${order.model}',
+                                style: GoogleFonts.cantataOne(
+                                  color: Colors.grey,
+                                  fontSize: 14,
                                 ),
                               ),
-                            ),
-                            SizedBox(height: 10),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    Expanded(
-                      flex: 1,
-                      child: Icon(
-                        Icons.arrow_forward_ios,
-                        size: 20,
-                        color: Color.fromRGBO(112, 112, 112, 1),
+                      SizedBox(height: 4),
+                      Row(
+                        children: <Widget>[
+                          Text(
+                            'Booking ID:',
+                            style: GoogleFonts.cantataOne(
+                              color: Color.fromRGBO(128, 128, 128, 1),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            order.bookingId,
+                            style: GoogleFonts.cantataOne(
+                              color: Colors.grey,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
+                      SizedBox(height: 4),
+                      Row(
+                        children: <Widget>[
+                          Text(
+                            'Pickup Date:',
+                            style: GoogleFonts.cantataOne(
+                              color: Color.fromRGBO(128, 128, 128, 1),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            order.date,
+                            style: GoogleFonts.cantataOne(
+                              color: Colors.grey,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 4),
+                      Row(
+                        children: <Widget>[
+                          Text(
+                            'Pickup Time:',
+                            style: GoogleFonts.cantataOne(
+                              color: Color.fromRGBO(128, 128, 128, 1),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            order.time,
+                            style: GoogleFonts.cantataOne(
+                              color: Colors.grey,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 4),
+                      Container(
+                        width: double.infinity,
+                        child: RichText(
+                          text: TextSpan(
+                            children: <TextSpan>[
+                              TextSpan(
+                                text: 'PickupAddress: ',
+                                style: GoogleFonts.cantataOne(
+                                  color: Color.fromRGBO(128, 128, 128, 1),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              TextSpan(
+                                text: '${order.flat}, ${order.address}',
+                                style: GoogleFonts.cantataOne(
+                                  color: Colors.grey,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                    ],
+                  ),
                 ),
               ],
             ),

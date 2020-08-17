@@ -244,8 +244,9 @@ class DeliveryOrders with ChangeNotifier {
     String model,
     String bookingId,
   ) async {
-    String username = 'rzp_test_rI34j5e3LyHywP';
-    String password = 'eNnvy1APbAD1lnocgHX0yuQ0';
+    final storage = new FlutterSecureStorage();
+    String username = await storage.read(key: 'username');
+    String password = await storage.read(key: 'password');
     String basicAuth =
         'Basic ' + base64Encode(utf8.encode('$username:$password'));
     final url = 'https://api.razorpay.com/v1/invoices/';
@@ -268,14 +269,13 @@ class DeliveryOrders with ChangeNotifier {
           "expire_by": 1793630556
         }));
     final extractedData = json.decode(response.body) as Map<String, dynamic>;
-    print(extractedData);
-    print(extractedData['id']);
     return extractedData['id'];
   }
 
   Future<bool> verifyPayment(String paymentId, String bookingId) async {
-    String username = 'rzp_test_rI34j5e3LyHywP';
-    String password = 'eNnvy1APbAD1lnocgHX0yuQ0';
+    final storage = new FlutterSecureStorage();
+    String username = await storage.read(key: 'username');
+    String password = await storage.read(key: 'password');
     String basicAuth =
         'Basic ' + base64Encode(utf8.encode('$username:$password'));
     final url = 'https://api.razorpay.com/v1/invoices/$paymentId';
@@ -303,6 +303,98 @@ class DeliveryOrders with ChangeNotifier {
     } else {
       return false;
     }
+  }
+
+  Future<DeliveryOrderItem> fetchabooking(
+      String bookingId, DeliveryOrderItem order) async {
+    final url = 'http://api.protto.in/fetchabooking.php?booking_id=$bookingId';
+    final storage = new FlutterSecureStorage();
+    String key = await storage.read(key: 'key');
+    String value = await storage.read(key: 'value');
+    String basicAuth = 'Basic ' + base64Encode(utf8.encode('$key:$value'));
+    final response = await http
+        .get(url, headers: <String, String>{'Authorization': basicAuth});
+    final extractedData = json.decode(response.body) as Map<String, dynamic>;
+    return DeliveryOrderItem(
+      id: extractedData['data']['id'],
+      bookingId: extractedData['data']['booking_id'],
+      address: extractedData['data']['address'],
+      bikeid: extractedData['data']['bike_id'],
+      date: extractedData['data']['date'],
+      deliveryType: extractedData['data']['delivery_type'],
+      customer: extractedData['data']['cust_name'],
+      deliveryOtp: extractedData['data']['delivery_otp'],
+      flat: extractedData['data']['flat'],
+      email: extractedData['data']['email'],
+      latitude: extractedData['data']['lat'],
+      longitude: extractedData['data']['lon'],
+      mobile: extractedData['data']['mobile'],
+      otp: extractedData['data']['otp'],
+      landmark: extractedData['data']['landmark'],
+      paid: extractedData['data']['paid'],
+      rideable: extractedData['data']['rideable'],
+      serviceType: extractedData['data']['service_type'],
+      time: extractedData['data']['timestamp'],
+      total: extractedData['data']['total'],
+      bikeNumber: order.bikeNumber,
+      bikeYear: order.bikeYear,
+      make: order.make,
+      model: order.model,
+      status: extractedData['data']['status'],
+    );
+  }
+
+  void changeorderstatus(String id, DeliveryOrderItem order) {
+    var index = _items.indexWhere((order) => order.id == id);
+    _items[index] = order;
+    notifyListeners();
+  }
+
+  Future<void> editrgno(String bikeId, String bikeReg, String id) async {
+    final url = 'http://api.protto.in/editrgno.php';
+    final storage = new FlutterSecureStorage();
+    String key = await storage.read(key: 'key');
+    String value = await storage.read(key: 'value');
+    String basicAuth = 'Basic ' + base64Encode(utf8.encode('$key:$value'));
+    final response = await http.patch(url,
+        body: json.encode({
+          'bike_id': bikeId,
+          'bike_reg': bikeReg,
+        }),
+        headers: <String, String>{'Authorization': basicAuth});
+    final extractedData = json.decode(response.body) as Map<String, dynamic>;
+    print(extractedData);
+    print(extractedData['message']);
+    var index = _items.indexWhere((ex) => ex.id == id);
+    var item = _items[index];
+    _items[index] = DeliveryOrderItem(
+      id: id,
+      bookingId: item.bookingId,
+      address: item.address,
+      bikeNumber: bikeReg,
+      bikeYear: item.bikeYear,
+      bikeid: bikeId,
+      customer: item.customer,
+      date: item.date,
+      deliveryOtp: item.deliveryOtp,
+      deliveryType: item.deliveryType,
+      email: item.email,
+      flat: item.flat,
+      landmark: item.landmark,
+      latitude: item.latitude,
+      longitude: item.longitude,
+      make: item.make,
+      mobile: item.mobile,
+      model: item.model,
+      otp: item.otp,
+      paid: item.paid,
+      rideable: item.rideable,
+      serviceType: item.serviceType,
+      status: item.status,
+      time: item.time,
+      total: item.total,
+    );
+    notifyListeners();
   }
 
   Future<void> getpreimages(String bookingId) async {
