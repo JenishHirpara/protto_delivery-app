@@ -17,12 +17,10 @@ class SampleStepTile {
     Key key,
     this.title,
     this.date,
-    this.time,
   });
 
   Widget title;
   String date;
-  String time;
 }
 
 class ActiveOrderScreen extends StatefulWidget {
@@ -260,8 +258,7 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
             ),
           ],
         ),
-        date: widget.order.date,
-        time: widget.order.time,
+        date: _order == null ? widget.order.date : _order.date,
       ),
       SampleStepTile(
         title: Column(
@@ -348,8 +345,7 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
             ),
           ],
         ),
-        date: widget.order.date,
-        time: widget.order.time,
+        date: _order == null ? widget.order.date : _order.date,
       ),
       SampleStepTile(
         title: Column(
@@ -402,8 +398,7 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
                   ),
           ],
         ),
-        date: widget.order.date,
-        time: widget.order.time,
+        date: _order == null ? widget.order.date : _order.date,
       ),
       SampleStepTile(
         title: Column(
@@ -453,8 +448,7 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
                   ),
           ],
         ),
-        date: widget.order.date,
-        time: widget.order.time,
+        date: _order == null ? widget.order.date : _order.date,
       ),
       SampleStepTile(
         title: Text(
@@ -466,7 +460,6 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
           ),
         ),
         date: widget.order.date,
-        time: widget.order.time,
       ),
       SampleStepTile(
         title: Text(
@@ -477,8 +470,7 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
             color: Color(0xff707070),
           ),
         ),
-        date: widget.order.date,
-        time: widget.order.time,
+        date: _order == null ? widget.order.date : _order.date,
       ),
       SampleStepTile(
         title: Column(
@@ -559,8 +551,7 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
             ),
           ],
         ),
-        date: widget.order.date,
-        time: widget.order.time,
+        date: _order == null ? widget.order.date : _order.date,
       ),
       SampleStepTile(
         title: Column(
@@ -650,8 +641,7 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
                   ),
           ],
         ),
-        date: widget.order.date,
-        time: widget.order.time,
+        date: _order == null ? widget.order.date : _order.date,
       ),
       SampleStepTile(
         title: Column(
@@ -704,8 +694,7 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
                   ),
           ],
         ),
-        date: widget.order.date,
-        time: widget.order.time,
+        date: _order == null ? widget.order.date : _order.date,
       ),
     ];
   }
@@ -850,7 +839,7 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
                                           CrossAxisAlignment.start,
                                       children: <Widget>[
                                         Text(
-                                          DateFormat('dd/MM').format(
+                                          DateFormat('dd/MM/yyyy').format(
                                               DateTime.parse(step.date)),
                                           style: TextStyle(
                                             fontFamily: 'SourceSansPro',
@@ -858,14 +847,14 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
                                                 128, 128, 128, 1),
                                           ),
                                         ),
-                                        Text(
-                                          step.time,
-                                          style: TextStyle(
-                                            fontFamily: 'SourceSansPro',
-                                            color: Color.fromRGBO(
-                                                128, 128, 128, 1),
-                                          ),
-                                        ),
+                                        // Text(
+                                        //   step.time,
+                                        //   style: TextStyle(
+                                        //     fontFamily: 'SourceSansPro',
+                                        //     color: Color.fromRGBO(
+                                        //         128, 128, 128, 1),
+                                        //   ),
+                                        // ),
                                       ],
                                     ),
                                   ),

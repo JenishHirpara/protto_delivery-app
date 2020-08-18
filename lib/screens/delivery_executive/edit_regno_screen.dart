@@ -88,6 +88,12 @@ class _EditRegnoScreenState extends State<EditRegnoScreen> {
                           if (value.isEmpty) {
                             return 'Please provide registration number';
                           }
+                          RegExp regExp = new RegExp(
+                              r'^[A-Z]{2}\s[0-9]{2}\s[A-Z]{2}\s[0-9]{4}$');
+                          if (!regExp.hasMatch(value)) {
+                            return 'Invalid number';
+                          }
+
                           return null;
                         },
                       ),

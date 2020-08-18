@@ -356,15 +356,12 @@ class DeliveryOrders with ChangeNotifier {
     String key = await storage.read(key: 'key');
     String value = await storage.read(key: 'value');
     String basicAuth = 'Basic ' + base64Encode(utf8.encode('$key:$value'));
-    final response = await http.patch(url,
+    await http.patch(url,
         body: json.encode({
           'bike_id': bikeId,
           'bike_reg': bikeReg,
         }),
         headers: <String, String>{'Authorization': basicAuth});
-    final extractedData = json.decode(response.body) as Map<String, dynamic>;
-    print(extractedData);
-    print(extractedData['message']);
     var index = _items.indexWhere((ex) => ex.id == id);
     var item = _items[index];
     _items[index] = DeliveryOrderItem(
