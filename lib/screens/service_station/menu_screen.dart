@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import './coming_soon.dart';
 import '../../providers/service_station.dart';
@@ -41,7 +42,7 @@ class MenuScreen extends StatelessWidget {
         actions: <Widget>[
           IconButton(
             icon: Icon(
-              Icons.exit_to_app,
+              MdiIcons.logout,
               color: Colors.deepOrange,
             ),
             onPressed: () {

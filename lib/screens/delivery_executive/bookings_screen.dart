@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../widgets/delivery_active_order_detail.dart';
 import '../../providers/delivery_orders.dart';
@@ -54,7 +55,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
         actions: <Widget>[
           IconButton(
             icon: Icon(
-              Icons.exit_to_app,
+              MdiIcons.logout,
               color: Colors.deepOrange,
             ),
             onPressed: () {
