@@ -47,7 +47,7 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
       builder: (ctx) {
         return AlertDialog(
           title: Text('Are you sure?'),
-          content: Text('Have you dropped off the bike to SS?'),
+          content: Text('Have you dropped off the bike to Service Station?'),
           actions: <Widget>[
             FlatButton(
               child: Text('Yes'),
@@ -73,6 +73,7 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
                       );
                     },
                   );
+                  _refreshPage();
                 } on HttpException catch (error) {
                   showDialog(
                     context: context,
@@ -112,7 +113,7 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
       builder: (ctx) {
         return AlertDialog(
           title: Text('Are you sure?'),
-          content: Text('Have you picked up the bike from customer?'),
+          content: Text('Have you picked up the bike from Service Station?'),
           actions: <Widget>[
             FlatButton(
               child: Text('Yes'),
@@ -139,6 +140,7 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
                       );
                     },
                   );
+                  _refreshPage();
                 } on HttpException catch (error) {
                   showDialog(
                     context: context,
@@ -204,10 +206,8 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
   Future<void> _refreshPage() async {
     _order = await Provider.of<DeliveryOrders>(context, listen: false)
         .fetchabooking(widget.order.bookingId, widget.order);
-    print(_order.status);
     Provider.of<DeliveryOrders>(context, listen: false)
         .changeorderstatus(widget.order.id, _order);
-    print(Provider.of<DeliveryOrders>(context, listen: false).items[1].status);
     setState(() {});
   }
 
@@ -273,7 +273,7 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
               ),
             ),
             SizedBox(height: 5),
-            int.parse(widget.order.status) >= 2
+            int.parse(_order == null ? widget.order.status : _order.status) >= 2
                 ? Container()
                 : Container(
                     width: MediaQuery.of(context).size.width * 0.35,
@@ -359,7 +359,7 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
               ),
             ),
             SizedBox(height: 10),
-            int.parse(widget.order.status) >= 3
+            int.parse(_order == null ? widget.order.status : _order.status) >= 3
                 ? Container()
                 : Container(
                     width: MediaQuery.of(context).size.width * 0.35,
@@ -412,7 +412,7 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
               ),
             ),
             SizedBox(height: 10),
-            int.parse(widget.order.status) >= 4
+            int.parse(_order == null ? widget.order.status : _order.status) >= 4
                 ? Container()
                 : Container(
                     width: MediaQuery.of(context).size.width * 0.35,
@@ -484,7 +484,7 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
               ),
             ),
             SizedBox(height: 5),
-            int.parse(widget.order.status) >= 7
+            int.parse(_order == null ? widget.order.status : _order.status) >= 7
                 ? Container()
                 : Container(
                     width: MediaQuery.of(context).size.width * 0.35,
@@ -566,7 +566,7 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
               ),
             ),
             SizedBox(height: 5),
-            int.parse(widget.order.status) >= 8
+            int.parse(_order == null ? widget.order.status : _order.status) >= 8
                 ? Container()
                 : Container(
                     width: MediaQuery.of(context).size.width * 0.35,
@@ -603,7 +603,7 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
                     ),
                   ),
             SizedBox(height: 5),
-            int.parse(widget.order.status) >= 9
+            int.parse(_order == null ? widget.order.status : _order.status) >= 9
                 ? Container()
                 : Container(
                     width: MediaQuery.of(context).size.width * 0.35,
@@ -655,7 +655,7 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
               ),
             ),
             SizedBox(height: 10),
-            int.parse(widget.order.status) >= 9
+            int.parse(_order == null ? widget.order.status : _order.status) >= 9
                 ? Container()
                 : Container(
                     width: MediaQuery.of(context).size.width * 0.35,

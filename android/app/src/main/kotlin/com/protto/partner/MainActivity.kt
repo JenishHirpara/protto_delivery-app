@@ -1,4 +1,4 @@
-package com.example.protto_delivery_ex_app
+package com.protto.partner
 
 import io.flutter.embedding.android.FlutterActivity
 

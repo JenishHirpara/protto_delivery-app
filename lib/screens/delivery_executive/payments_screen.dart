@@ -100,8 +100,7 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
       context: context,
       builder: (ctx) {
         return AlertDialog(
-          title: Text(
-              'Are you sure you received ₹ ${double.parse(order.total) - double.parse(order.paid)} from the customer?'),
+          title: Text('Are you sure you received ₹ $due from the customer?'),
           actions: <Widget>[
             FlatButton(
               onPressed: () async {
@@ -109,24 +108,6 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                     await Provider.of<DeliveryOrders>(context, listen: false)
                         .paymentreceived(order.bookingId);
                 Navigator.of(ctx).pop();
-                // if (message == 'payment approved') {
-                //   showDialog(
-                //     context: context,
-                //     builder: (ctx2) {
-                //       return AlertDialog(
-                //         title: Text(message),
-                //         actions: <Widget>[
-                //           FlatButton(
-                //             onPressed: () {
-                //               Navigator.of(ctx2).pop();
-                //             },
-                //             child: Text('Okay'),
-                //           ),
-                //         ],
-                //       );
-                //     },
-                //   );
-                // }
                 showDialog(
                   context: context,
                   builder: (ctx2) {

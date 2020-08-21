@@ -77,8 +77,8 @@ class _MyAppState extends State<MyApp> {
     if (_isInit) {
       await storage.write(key: 'key', value: 'apikey');
       await storage.write(key: 'value', value: 'proflutter');
-      await storage.write(key: 'username', value: 'rzp_test_rI34j5e3LyHywP');
-      await storage.write(key: 'password', value: 'eNnvy1APbAD1lnocgHX0yuQ0');
+      await storage.write(key: 'username', value: 'rzp_live_6MErVr8nr9qQGG');
+      await storage.write(key: 'password', value: 'tQRzOk8Y9XG8TNVBS9HSSzgs');
       setState(() {
         _isLoading = true;
       });
