@@ -181,6 +181,9 @@ class ServiceStation with ChangeNotifier {
       }
       _item2 = data;
       notifyListeners();
+    } else {
+      _item2 = [];
+      notifyListeners();
     }
   }
 
