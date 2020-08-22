@@ -17,12 +17,18 @@ class DeliveryExecutivesScreen extends StatefulWidget {
 class _DeliveryExecutivesScreenState extends State<DeliveryExecutivesScreen> {
   var _isInit = true;
   var _isLoading = true;
+  List<DeliveryExecutiveUser> deliveryEx;
+  List<DeliveryExecutiveUser> onDutyDeliveryEx;
+  List<DeliveryExecutiveUser> availableDeliveryEx;
 
   @override
   void didChangeDependencies() async {
     if (_isInit) {
       await Provider.of<ServiceStation>(context, listen: false)
           .getDeliveryExecutives();
+      deliveryEx = Provider.of<ServiceStation>(context, listen: false).item2;
+      onDutyDeliveryEx = deliveryEx.where((ex) => ex.assigned).toList();
+      availableDeliveryEx = deliveryEx.where((ex) => !ex.assigned).toList();
       setState(() {
         _isLoading = false;
       });
@@ -33,12 +39,6 @@ class _DeliveryExecutivesScreenState extends State<DeliveryExecutivesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final List<DeliveryExecutiveUser> deliveryEx =
-        Provider.of<ServiceStation>(context).item2;
-    final List<DeliveryExecutiveUser> onDutyDeliveryEx =
-        deliveryEx.where((ex) => ex.assigned).toList();
-    final List<DeliveryExecutiveUser> availableDeliveryEx =
-        deliveryEx.where((ex) => !ex.assigned).toList();
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
