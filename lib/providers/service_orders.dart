@@ -26,6 +26,7 @@ class ServiceOrderItem with ChangeNotifier {
   final String longitude;
   final String deliveryType;
   final String customer;
+  final String mobile;
   final String deId;
   final String deName;
   final String specialRequest;
@@ -46,6 +47,7 @@ class ServiceOrderItem with ChangeNotifier {
     @required this.longitude,
     @required this.deliveryType,
     @required this.customer,
+    @required this.mobile,
     @required this.make,
     @required this.model,
     @required this.bikeNumber,
@@ -162,6 +164,7 @@ class ServiceOrders with ChangeNotifier {
             jobApprove: extractedData1['data'][i]['job_approve'],
             deliveryType: extractedData1['data'][i]['delivery_type'],
             customer: extractedData1['data'][i]['cust_name'],
+            mobile: extractedData1['data'][i]['mobile'],
             bikeNumber: extractedData2['data']['bike_reg'],
             bikeYear: extractedData2['data']['year'],
             make: extractedData2['data']['make'],
@@ -207,6 +210,7 @@ class ServiceOrders with ChangeNotifier {
       deliveryType: item.deliveryType,
       jobApprove: item.jobApprove,
       customer: item.customer,
+      mobile: item.mobile,
       make: item.make,
       model: item.model,
       bikeNumber: item.bikeNumber,
@@ -272,16 +276,6 @@ class ServiceOrders with ChangeNotifier {
 
   Future<void> addjob(
       String bookingId, int count, List<dynamic> data, String status) async {
-    // final url = 'http://stage.protto.in/api/shivangi/bookingstatus.php';
-    // final response = await http.patch(url,
-    //     body: json.encode({
-    //       'booking_id': bookingId,
-    //       'status': status,
-    //     }));
-    // final extractedData = json.decode(response.body) as Map<String, dynamic>;
-    // if (extractedData['message'] == 'status not incremented') {
-    //   throw HttpException('Jobs cannot be added right now');
-    // }
     const url1 = 'http://api.protto.in/addjob.php';
     final storage = new FlutterSecureStorage();
     String key = await storage.read(key: 'key');
@@ -381,6 +375,7 @@ class ServiceOrders with ChangeNotifier {
       bikeid: oldItem.bikeid,
       bookingId: oldItem.bookingId,
       customer: oldItem.customer,
+      mobile: oldItem.mobile,
       date: oldItem.date,
       deliveryType: oldItem.deliveryType,
       flat: oldItem.flat,

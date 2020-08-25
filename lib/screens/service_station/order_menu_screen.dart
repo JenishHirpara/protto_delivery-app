@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../widgets/service_station_order_menu.dart';
 import '../../providers/service_orders.dart';
@@ -85,6 +86,14 @@ class _OrderMenuScreenState extends State<OrderMenuScreen> {
     );
   }
 
+  void _launchCaller(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var order = ModalRoute.of(context).settings.arguments as ServiceOrderItem;
@@ -98,6 +107,13 @@ class _OrderMenuScreenState extends State<OrderMenuScreen> {
             fontSize: 24,
           ),
         ),
+        actions: [
+          IconButton(
+            onPressed: () => _launchCaller('tel:+91${order.mobile}'),
+            icon: Icon(Icons.phone),
+            color: Theme.of(context).primaryColor,
+          ),
+        ],
         backgroundColor: Color.fromRGBO(250, 250, 250, 1),
         elevation: 0,
         leading: InkWell(

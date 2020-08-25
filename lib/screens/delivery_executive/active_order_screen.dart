@@ -182,6 +182,14 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
     }
   }
 
+  void _launchCaller(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
   void _openMap(DeliveryOrderItem order) async {
     _serviceEnabled = await _location.serviceEnabled();
     if (!_serviceEnabled) {
@@ -713,6 +721,15 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
             fontWeight: FontWeight.w500,
           ),
         ),
+        actions: [
+          IconButton(
+            onPressed: () => _order == null
+                ? _launchCaller('tel:+91${widget.order.mobile}')
+                : _launchCaller('tel:+91${_order.mobile}'),
+            icon: Icon(Icons.phone),
+            color: Theme.of(context).primaryColor,
+          ),
+        ],
         leading: InkWell(
           child: Icon(
             Icons.arrow_back_ios,
