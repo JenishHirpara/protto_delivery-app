@@ -68,21 +68,19 @@ class _BookingsScreenState extends State<BookingsScreen> {
                 child: Container(
                   width: double.infinity,
                   margin: EdgeInsets.all(12),
-                  child: Container(
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemBuilder: (ctx, i) => Column(
-                        children: <Widget>[
-                          ChangeNotifierProvider.value(
-                            value: orders[i],
-                            child: ServiceActiveOrderDetail(),
-                          ),
-                          SizedBox(height: 8),
-                        ],
-                      ),
-                      itemCount: orders.length,
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemBuilder: (ctx, i) => Column(
+                      children: <Widget>[
+                        ChangeNotifierProvider.value(
+                          value: orders[i],
+                          child: ServiceActiveOrderDetail(),
+                        ),
+                        SizedBox(height: 8),
+                      ],
                     ),
+                    itemCount: orders.length,
                   ),
                 ),
               ),

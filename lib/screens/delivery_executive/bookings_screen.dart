@@ -99,34 +99,20 @@ class _BookingsScreenState extends State<BookingsScreen> {
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Container(
                   width: double.infinity,
-                  margin: EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        '  Active',
-                        style: TextStyle(
-                          color: Theme.of(context).primaryColor,
-                          fontWeight: FontWeight.bold,
+                  margin: EdgeInsets.all(12),
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemBuilder: (ctx, i) => Column(
+                      children: <Widget>[
+                        ChangeNotifierProvider.value(
+                          value: orders[i],
+                          child: DeliveryActiveOrderDetail(i),
                         ),
-                      ),
-                      Container(
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemBuilder: (ctx, i) => Column(
-                            children: <Widget>[
-                              ChangeNotifierProvider.value(
-                                value: orders[i],
-                                child: DeliveryActiveOrderDetail(i),
-                              ),
-                              SizedBox(height: 15),
-                            ],
-                          ),
-                          itemCount: orders.length,
-                        ),
-                      ),
-                    ],
+                        SizedBox(height: 15),
+                      ],
+                    ),
+                    itemCount: orders.length,
                   ),
                 ),
               ),
