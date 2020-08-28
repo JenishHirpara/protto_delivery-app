@@ -21,6 +21,8 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
   var _userName;
   var _id;
   List<DeliveryExecutiveUser> deliveryEx;
+  // List<DeliveryExecutiveUser> availabledeliveryEx;
+
   @override
   void didChangeDependencies() async {
     if (_isInit) {
@@ -31,17 +33,18 @@ class _DeliveryInfoScreenState extends State<DeliveryInfoScreen> {
       });
       var actualdeliveryEx =
           Provider.of<ServiceStation>(context, listen: false).item2;
-      deliveryEx = actualdeliveryEx.where((ex) => !ex.assigned).toList();
-      // deliveryEx = [availabledeliveryEx[0]];
-      // if (actualdeliveryEx.length != 0) {
-      //   for (int i = 1; i < actualdeliveryEx.length; i++) {
-      //     var duplicate = deliveryEx.indexWhere(
-      //         (user) => user.userName == actualdeliveryEx[i].userName);
-      //     if (duplicate == -1) {
-      //       deliveryEx.add(actualdeliveryEx[i]);
-      //     }
-      //   }
-      // }
+      // availabledeliveryEx =
+      //     actualdeliveryEx.where((ex) => !ex.assigned).toList();
+      deliveryEx = [actualdeliveryEx[0]];
+      if (actualdeliveryEx.length != 0) {
+        for (int i = 1; i < actualdeliveryEx.length; i++) {
+          var duplicate = deliveryEx.indexWhere(
+              (user) => user.userName == actualdeliveryEx[i].userName);
+          if (duplicate == -1) {
+            deliveryEx.add(actualdeliveryEx[i]);
+          }
+        }
+      }
     }
     _isInit = false;
     super.didChangeDependencies();
